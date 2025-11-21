@@ -14,7 +14,7 @@ const navItems = [
   { label: "Services", href: "#services" },
   { label: "Projects", href: "#projects" },
   { label: "Contact", href: "#contact" },
-  { label: "Admin Panel", href: "#" },
+  { label: "Admin Panel", href: "/admin" },
 ];
 
 const Header = () => {
@@ -28,7 +28,7 @@ const Header = () => {
     };
     window.addEventListener("scroll", handleScroll);
 
-    const sectionIds = navItems.map((item) => item.href.substring(1));
+    const sectionIds = navItems.map((item) => item.href.substring(1)).filter(id => id && !id.startsWith('/'));
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -79,7 +79,7 @@ const Header = () => {
               )}
             >
               {item.label}
-              {activeSection === item.href.substring(1) && (
+              {activeSection === item.href.substring(1) && !item.href.startsWith('/admin') && (
                 <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full"></span>
               )}
             </Link>
