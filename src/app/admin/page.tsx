@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { MessageSquare, Users } from "lucide-react";
 
 type Contact = {
   id: string;
@@ -72,7 +73,7 @@ const AdminPage = () => {
   if (!isAuthenticated) {
     return (
        <div className="flex min-h-screen items-center justify-center bg-black">
-        <Skeleton className="h-[400px] w-[800px] rounded-xl" />
+        <Skeleton className="h-screen w-full" />
       </div>
     );
   }
@@ -80,19 +81,42 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 md:p-10">
       <div className="container mx-auto">
+        <header className="mb-8">
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
+                <div className="flex gap-4">
+                  <Link href="/portfolio">
+                    <Button variant="outline">View Portfolio</Button>
+                  </Link>
+                  <Button onClick={handleLogout} variant="destructive">
+                    Logout
+                  </Button>
+                </div>
+            </div>
+        </header>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            <Card className="bg-black/20 backdrop-blur-lg border border-white/10">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Submissions
+                </CardTitle>
+                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{loading ? <Skeleton className="h-8 w-16" /> : contacts.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Total messages received
+                </p>
+              </CardContent>
+            </Card>
+        </div>
+
         <Card className="bg-black/20 backdrop-blur-lg border border-white/10">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader>
             <CardTitle className="font-headline text-2xl">
               Contact Submissions
             </CardTitle>
-            <div className="flex gap-4">
-              <Link href="/portfolio">
-                <Button variant="outline">View Portfolio</Button>
-              </Link>
-              <Button onClick={handleLogout} variant="destructive">
-                Logout
-              </Button>
-            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
