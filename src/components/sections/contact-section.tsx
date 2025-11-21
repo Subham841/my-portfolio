@@ -88,11 +88,11 @@ const ContactSection = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email" className="text-white">Gmail</Label>
+                    <Label htmlFor="email" className="text-white">Email</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Your Gmail Address"
+                      placeholder="Your Email Address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
