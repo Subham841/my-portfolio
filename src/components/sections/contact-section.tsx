@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import ElectricBorder from "../ElectricBorder";
 import { useFirebase } from "@/firebase/provider";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -28,7 +28,7 @@ const ContactSection = () => {
         mobile,
         email,
         message,
-        submittedAt: new Date(),
+        submittedAt: serverTimestamp(),
       });
 
       toast({
