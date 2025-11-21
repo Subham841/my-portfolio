@@ -2,8 +2,8 @@
   "placeholderImages": [
     {
       "id": "profile",
-      "description": "A placeholder image for Subham Kumar Sahu's profile.",
-      "imageUrl": "https://images.unsplash.com/photo-1642667226859-a2d0f9e74a21?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwcm9maWxlJTIwcGVyc29ufGVufDB8fHx8MTc2MzYzODgzNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "A profile photo of Subham Kumar Sahu.",
+      "imageUrl": "https://images.unsplash.com/photo-1721332219183-3c66f54c5a93?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfGFsbHwxfHx8fHx8fHx8fDE3MjE0MDY4NDd8&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "profile person"
     },
     {
