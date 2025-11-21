@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { FirebaseProvider } from "@/firebase/provider";
 
 export const metadata: Metadata = {
   title: "Subham's Portfolio",
@@ -22,7 +23,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
       </head>
       <body className={cn("font-body antialiased")}>
-        {children}
+        <FirebaseProvider>
+          {children}
+        </FirebaseProvider>
         <Toaster />
       </body>
     </html>
