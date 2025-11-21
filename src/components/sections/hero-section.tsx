@@ -18,9 +18,7 @@ const HeroSection = () => {
             <p className="text-xl md:text-2xl font-headline text-primary mb-6">
               Backend Developer & Web Development Enthusiast
             </p>
-            <p className="text-base md:text-lg text-gray-300 max-w-xl mx-auto md:mx-0">
-              I am a highly motivated B.Tech student specializing in Computer Science and Engineering, passionate about building robust backend solutions and web applications. I focus on DSA and web development and enjoy working on real-world projects that enhance my understanding and creativity.
-            </p>
+            
              <div className="mt-8 flex gap-4 justify-center md:justify-start">
                <Button asChild size="lg">
                 <Link href="#projects">View Projects</Link>
