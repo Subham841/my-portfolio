@@ -3,6 +3,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowDown } from 'lucide-react';
+import GradientText from '../GradientText';
 
 const HeroSection = () => {
   const profileImage = PlaceHolderImages.find((img) => img.id === 'profile');
@@ -20,12 +21,24 @@ const HeroSection = () => {
             </p>
             
              <div className="mt-8 flex gap-4 justify-center md:justify-start">
-               <Button asChild size="lg">
-                <Link href="#projects">View Projects</Link>
-              </Button>
-              <Button asChild variant="secondary" size="lg">
-                <Link href="#contact">Contact Me</Link>
-              </Button>
+               <Link href="#projects">
+                  <GradientText
+                    colors={["#6DD5ED", "#3B5998", "#6DD5ED"]}
+                    animationSpeed={4}
+                    className="font-semibold"
+                  >
+                    View Projects
+                  </GradientText>
+                </Link>
+                <Link href="#contact">
+                   <GradientText
+                    colors={["#6DD5ED", "#3B5998", "#6DD5ED"]}
+                    animationSpeed={4}
+                    className="font-semibold"
+                  >
+                    Contact Me
+                  </GradientText>
+                </Link>
             </div>
           </div>
           <div className="flex justify-center">
