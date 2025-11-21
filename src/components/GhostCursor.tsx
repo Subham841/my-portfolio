@@ -354,7 +354,10 @@ const GhostCursor = ({
       const mat = materialRef.current;
       const comp = composerRef.current;
 
-      if (!mat || !comp) return;
+      if (!mat || !comp) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
 
       if (pointerActiveRef.current) {
         velocityRef.current.set(
@@ -443,16 +446,21 @@ const GhostCursor = ({
       parent.removeEventListener('pointerenter', onPointerEnter);
       parent.removeEventListener('pointerleave', onPointerLeave);
       resizeObsRef.current?.disconnect();
+      
+      if (rendererRef.current && composerRef.current && materialRef.current && geom) {
+        const renderer = rendererRef.current;
+        const composer = composerRef.current;
+        
+        if (renderer.domElement && renderer.domElement.parentElement) {
+          renderer.domElement.parentElement.removeChild(renderer.domElement);
+        }
 
-      if (renderer.domElement && renderer.domElement.parentElement) {
-        renderer.domElement.parentElement.removeChild(renderer.domElement);
+        scene.clear();
+        geom.dispose();
+        materialRef.current.dispose();
+        (composer as any).dispose?.(); // EffectComposer doesn't have a dispose method in its type def
+        renderer.dispose();
       }
-
-      scene.clear();
-      geom.dispose();
-      material.dispose();
-      (composer as any).dispose?.(); // EffectComposer doesn't have a dispose method in its type def
-      renderer.dispose();
 
       if (!prevParentPos || prevParentPos === 'static') {
         parent.style.position = prevParentPos;
@@ -517,3 +525,5 @@ const GhostCursor = ({
 };
 
 export default GhostCursor;
+
+    

@@ -142,3 +142,5 @@ const ElectricBorder = ({ children, color = '#5227FF', speed = 1, chaos = 1, thi
 };
 
 export default ElectricBorder;
+
+    
