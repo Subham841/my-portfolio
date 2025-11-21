@@ -4,10 +4,10 @@ import { Badge } from '@/components/ui/badge';
 
 const projects = [
   {
-    title: 'Admin Panel Project',
-    description: 'A functional and responsive admin panel built using Django for managing data and backend operations.',
-    technologies: ['Django', 'Python', 'SQL'],
-    role: 'Backend Developer',
+    title: 'Admin Panel',
+    description: 'A functional and responsive admin panel built using Next.js, ShadCN and Tailwind CSS for managing data and backend operations.',
+    technologies: ['Next.js', 'ShadCN', 'Tailwind CSS'],
+    role: 'Full-stack Developer',
     image: PlaceHolderImages.find((img) => img.id === 'admin-panel'),
   },
 ];
