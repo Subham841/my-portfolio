@@ -7,22 +7,30 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AdminLoginPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, we'll just show a toast.
-    // Later, this can be integrated with Firebase Auth.
-    toast({
-      title: "Login Attempted",
-      description: `Email: ${email}`,
-    });
-    console.log({ email, password });
+    if (email === 'Subhamkumarsahu12@gmail.com' && password === '123456') {
+      toast({
+        title: "Login Successful",
+        description: "Redirecting to your portfolio...",
+      });
+      router.push('/');
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password.",
+      });
+    }
   };
 
   return (
