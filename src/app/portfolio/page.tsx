@@ -25,8 +25,8 @@ export default function Home() {
         fadeDelayMs={1000}
         fadeDurationMs={1500}
       />
-      <Header />
-      <main className="flex-grow pt-20 bg-gradient-to-b from-[#0A2A64] to-black">
+      
+      <main className="flex-grow bg-gradient-to-b from-[#0A2A64] to-black">
         <HeroSection />
         <AboutSection />
         <SkillsSection />
@@ -35,6 +35,7 @@ export default function Home() {
         <ProjectsSection />
         <ContactSection />
       </main>
+      <Header />
       <Footer />
     </div>
   );
