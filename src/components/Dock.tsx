@@ -5,11 +5,11 @@ import { Children, cloneElement, useEffect, useMemo, useRef, useState } from 're
 
 import './Dock.css';
 
-function DockItem({ children, className = '', onClick, mouseX, spring, distance, magnification, baseItemSize }: {
+function DockItem({ children, className = '', onClick, mouseY, spring, distance, magnification, baseItemSize }: {
     children: React.ReactNode;
     className?: string;
     onClick?: () => void;
-    mouseX: any;
+    mouseY: any;
     spring: any;
     distance: number;
     magnification: number;
@@ -19,12 +19,12 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
   const ref = useRef<HTMLDivElement>(null);
   const isHovered = useMotionValue(0);
 
-  const mouseDistance = useTransform(mouseX, val => {
+  const mouseDistance = useTransform(mouseY, val => {
     const rect = ref.current?.getBoundingClientRect() ?? {
-      x: 0,
-      width: baseItemSize
+      y: 0,
+      height: baseItemSize
     };
-    return val - rect.x - baseItemSize / 2;
+    return val - rect.y - baseItemSize / 2;
   });
 
   const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, magnification, baseItemSize]);
@@ -72,13 +72,13 @@ function DockLabel({ children, className = '', ...rest }: {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: 1, y: -10 }}
-          exit={{ opacity: 0, y: 0 }}
+          initial={{ opacity: 0, x: 0 }}
+          animate={{ opacity: 1, x: -10 }}
+          exit={{ opacity: 0, x: 0 }}
           transition={{ duration: 0.2 }}
           className={`dock-label ${className}`}
           role="tooltip"
-          style={{ x: '-50%' }}
+          style={{ y: '-50%', left: '-1.5rem', transform: 'translate(-100%, -50%)' }}
         >
           {children}
         </motion.div>
@@ -100,8 +100,8 @@ export default function Dock({
   spring = { mass: 0.1, stiffness: 150, damping: 12 },
   magnification = 70,
   distance = 200,
-  panelHeight = 68,
-  dockHeight = 256,
+  panelWidth = 68,
+  dockWidth = 256,
   baseItemSize = 50
 }: {
     items: {
@@ -114,33 +114,33 @@ export default function Dock({
     spring?: any;
     magnification?: number;
     distance?: number;
-    panelHeight?: number;
-    dockHeight?: number;
+    panelWidth?: number;
+    dockWidth?: number;
     baseItemSize?: number;
 }) {
-  const mouseX = useMotionValue(Infinity);
+  const mouseY = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
 
-  const maxHeight = useMemo(
-    () => Math.max(dockHeight, magnification + magnification / 2 + 4),
-    [magnification, dockHeight]
+  const maxWidth = useMemo(
+    () => Math.max(dockWidth, magnification + magnification / 2 + 4),
+    [magnification, dockWidth]
   );
-  const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
-  const height = useSpring(heightRow, spring);
+  const widthRow = useTransform(isHovered, [0, 1], [panelWidth, maxWidth]);
+  const width = useSpring(widthRow, spring);
 
   return (
-    <motion.div style={{ height, scrollbarWidth: 'none' }} className="dock-outer">
+    <motion.div style={{ width, scrollbarWidth: 'none' }} className="dock-outer">
       <motion.div
-        onMouseMove={({ pageX }) => {
+        onMouseMove={({ pageY }) => {
           isHovered.set(1);
-          mouseX.set(pageX);
+          mouseY.set(pageY);
         }}
         onMouseLeave={() => {
           isHovered.set(0);
-          mouseX.set(Infinity);
+          mouseY.set(Infinity);
         }}
         className={`dock-panel ${className}`}
-        style={{ height: panelHeight }}
+        style={{ width: panelWidth }}
         role="toolbar"
         aria-label="Application dock"
       >
@@ -149,7 +149,7 @@ export default function Dock({
             key={index}
             onClick={item.onClick}
             className={item.className}
-            mouseX={mouseX}
+            mouseY={mouseY}
             spring={spring}
             distance={distance}
             magnification={magnification}
