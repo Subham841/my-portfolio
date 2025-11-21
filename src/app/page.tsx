@@ -16,7 +16,7 @@ export default function AdminLogin() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real application, you'd want to use a more secure authentication method.
-    if (password === "admin") {
+    if (password === "123321") {
       sessionStorage.setItem("isAdminAuthenticated", "true");
       router.push("/admin");
     } else {
