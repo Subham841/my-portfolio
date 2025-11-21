@@ -32,10 +32,6 @@ const ContactSection = () => {
     <section id="contact" className="py-20 md:py-32 bg-black/20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-2xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-headline font-bold text-white">Get In Touch</h2>
-          <p className="text-lg text-gray-400 mt-4 mb-8">
-            Have a question or want to work together? Leave your details and I'll get back to you.
-          </p>
           <div className="relative w-full max-w-lg mx-auto p-8 bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl">
             <form onSubmit={handleSubmit} className="space-y-6 text-left">
               <div>
