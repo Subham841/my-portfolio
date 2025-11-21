@@ -30,6 +30,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 type Contact = {
   id: string;
@@ -72,6 +74,8 @@ const AdminPage = () => {
   const [projectRole, setProjectRole] = useState("");
   const [projectImageUrl, setProjectImageUrl] = useState("");
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+
+  const profileImage = PlaceHolderImages.find((img) => img.id === 'profile');
 
   useEffect(() => {
     const authStatus = localStorage.getItem("isAdminAuthenticated");
@@ -191,7 +195,18 @@ const AdminPage = () => {
       <div className="container mx-auto">
         <header className="mb-8">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
+                <div className="flex items-center gap-4">
+                  {profileImage && (
+                    <Image
+                      src={profileImage.imageUrl}
+                      alt="Admin"
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                  )}
+                  <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
+                </div>
                 <div className="flex gap-4">
                   <Link href="/portfolio">
                     <Button variant="outline">View Portfolio</Button>
@@ -379,5 +394,3 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
-
-    
