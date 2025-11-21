@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import ElectricBorder from "../ElectricBorder";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -33,62 +34,70 @@ const ContactSection = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-headline font-bold text-white mb-12">Contact With Me</h2>
-          <div className="relative w-full max-w-lg mx-auto p-8 bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl">
-            <form onSubmit={handleSubmit} className="space-y-6 text-left">
-              <div>
-                <Label htmlFor="name" className="text-white">Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Your Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="mt-2"
-                />
+            <ElectricBorder
+              color="#7df9ff"
+              speed={1}
+              chaos={0.5}
+              thickness={2}
+              style={{ borderRadius: '1rem' }}
+            >
+              <div className="relative w-full max-w-lg mx-auto p-8 bg-black/20 backdrop-blur-lg border border-transparent rounded-2xl shadow-2xl">
+                <form onSubmit={handleSubmit} className="space-y-6 text-left">
+                  <div>
+                    <Label htmlFor="name" className="text-white">Name</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="Your Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="mobile" className="text-white">Mobile No.</Label>
+                    <Input
+                      id="mobile"
+                      type="tel"
+                      placeholder="Your Mobile Number"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value)}
+                      required
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email" className="text-white">Gmail</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Your Gmail Address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="message" className="text-white">Message</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Your message"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      required
+                      className="mt-2 min-h-[100px]"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <Button type="submit" size="lg" className="w-full">
+                      Send Message
+                    </Button>
+                  </div>
+                </form>
               </div>
-              <div>
-                <Label htmlFor="mobile" className="text-white">Mobile No.</Label>
-                <Input
-                  id="mobile"
-                  type="tel"
-                  placeholder="Your Mobile Number"
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                  required
-                  className="mt-2"
-                />
-              </div>
-              <div>
-                <Label htmlFor="email" className="text-white">Gmail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Your Gmail Address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="mt-2"
-                />
-              </div>
-              <div>
-                <Label htmlFor="message" className="text-white">Message</Label>
-                <Textarea
-                  id="message"
-                  placeholder="Your message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                  className="mt-2 min-h-[100px]"
-                />
-              </div>
-              <div className="text-center">
-                <Button type="submit" size="lg" className="w-full">
-                  Send Message
-                </Button>
-              </div>
-            </form>
-          </div>
+            </ElectricBorder>
         </div>
       </div>
     </section>
