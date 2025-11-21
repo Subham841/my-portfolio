@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
         title: "Login Successful",
         description: "Redirecting to your portfolio...",
       });
-      router.push('/portfolio');
+      router.push('/home');
     } else {
       toast({
         variant: "destructive",
