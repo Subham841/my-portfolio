@@ -32,6 +32,7 @@ const ContactSection = () => {
     <section id="contact" className="py-20 md:py-32 bg-black/20">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-headline font-bold text-white mb-12">Contact With Me</h2>
           <div className="relative w-full max-w-lg mx-auto p-8 bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl">
             <form onSubmit={handleSubmit} className="space-y-6 text-left">
               <div>
