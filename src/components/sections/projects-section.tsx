@@ -1,18 +1,47 @@
-import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Badge } from '@/components/ui/badge';
+"use client";
 
-const projects = [
-  {
-    title: 'Admin Panel',
-    description: 'A functional and responsive admin panel built using Next.js, ShadCN and Tailwind CSS for managing data and backend operations.',
-    technologies: ['Next.js', 'ShadCN', 'Tailwind CSS'],
-    role: 'Full-stack Developer',
-    image: PlaceHolderImages.find((img) => img.id === 'admin-panel'),
-  },
-];
+import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
+import { useFirebase } from '@/firebase/provider';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '../ui/skeleton';
+
+type Project = {
+  id: string;
+  title: string;
+  description: string;
+  technologies: string[];
+  role: string;
+  imageUrl: string;
+};
+
 
 const ProjectsSection = () => {
+  const { firestore } = useFirebase();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchProjects = async () => {
+      setLoading(true);
+      const projectsCollection = collection(firestore, "projects");
+      const q = query(projectsCollection);
+      const querySnapshot = await getDocs(q);
+      const projectsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Project, "id">),
+      }));
+      setProjects(projectsData);
+      setLoading(false);
+    };
+
+    fetchProjects();
+  }, [firestore]);
+
+
   return (
     <section id="projects" className="py-20 md:py-32">
       <div className="container mx-auto px-4 md:px-6">
@@ -21,16 +50,32 @@ const ProjectsSection = () => {
           <p className="text-lg text-gray-400 mt-2">A selection of my work.</p>
         </div>
         <div className="grid md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-3xl mx-auto">
-          {projects.map((project, index) => (
+          {loading ? (
+             <div className="bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-6">
+                <Skeleton className="w-full h-64" />
+                <Skeleton className="h-8 w-1/2 mt-4" />
+                <Skeleton className="h-4 w-1/3 mt-2" />
+                <Skeleton className="h-12 w-full mt-4" />
+                <div className="flex flex-wrap gap-2 mt-4">
+                    <Skeleton className="h-6 w-20" />
+                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-6 w-16" />
+                </div>
+            </div>
+          ) : projects.length === 0 ? (
+             <div className="text-center py-12 text-gray-400">
+                No projects have been added yet.
+              </div>
+          ) : (
+            projects.map((project, index) => (
             <div key={index} className="bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl overflow-hidden group">
               <div className="relative">
-                {project.image && (
+                {project.imageUrl && (
                   <Image
-                    src={project.image.imageUrl}
-                    alt={project.image.description}
+                    src={project.imageUrl}
+                    alt={project.title}
                     width={600}
                     height={400}
-                    data-ai-hint={project.image.imageHint}
                     className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 )}
@@ -49,7 +94,7 @@ const ProjectsSection = () => {
                 </div>
               </div>
             </div>
-          ))}
+          )))}
         </div>
       </div>
     </section>
@@ -57,3 +102,5 @@ const ProjectsSection = () => {
 };
 
 export default ProjectsSection;
+
+    
