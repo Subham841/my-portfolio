@@ -1,58 +1,42 @@
-"use client";
+import Header from "@/components/header";
+import HeroSection from "@/components/sections/hero-section";
+import AboutSection from "@/components/sections/about-section";
+import SkillsSection from "@/components/sections/skills-section";
+import ExperienceSection from "@/components/sections/experience-section";
+import ServicesSection from "@/components/sections/services-section";
+import ProjectsSection from "@/components/sections/projects-section";
+import ContactSection from "@/components/sections/contact-section";
+import Footer from "@/components/footer";
+import GhostCursor from "@/components/GhostCursor";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-export default function AdminLogin() {
-  const [password, setPassword] = useState("");
-  const router = useRouter();
-  const { toast } = useToast();
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real application, you'd want to use a more secure authentication method.
-    if (password === "123321") {
-      sessionStorage.setItem("isAdminAuthenticated", "true");
-      router.push("/admin");
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Incorrect password. Please try again.",
-      });
-    }
-  };
-
+export default function PortfolioPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
-      <Card className="w-full max-w-sm bg-black/20 backdrop-blur-lg border-white/10 text-white">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center font-headline">Admin Login</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter admin password"
-              />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+    <div className="flex flex-col min-h-screen bg-black">
+      <GhostCursor
+        color="#B19EEF"
+        brightness={1}
+        edgeIntensity={0}
+        trailLength={50}
+        inertia={0.5}
+        grainIntensity={0.05}
+        bloomStrength={0.1}
+        bloomRadius={1.0}
+        bloomThreshold={0.025}
+        fadeDelayMs={1000}
+        fadeDurationMs={1500}
+      />
+      
+      <main className="flex-grow bg-gradient-to-b from-[#0A2A64] to-black">
+        <HeroSection />
+        <AboutSection />
+        <SkillsSection />
+        <ExperienceSection />
+        <ServicesSection />
+        <ProjectsSection />
+        <ContactSection />
+      </main>
+      <Header />
+      <Footer />
     </div>
   );
 }
