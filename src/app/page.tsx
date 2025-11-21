@@ -1,41 +1,77 @@
-import Header from "@/components/header";
-import HeroSection from "@/components/sections/hero-section";
-import AboutSection from "@/components/sections/about-section";
-import SkillsSection from "@/components/sections/skills-section";
-import ExperienceSection from "@/components/sections/experience-section";
-import ServicesSection from "@/components/sections/services-section";
-import ProjectsSection from "@/components/sections/projects-section";
-import ContactSection from "@/components/sections/contact-section";
-import Footer from "@/components/footer";
-import GhostCursor from "@/components/GhostCursor";
+'use client';
 
-export default function Home() {
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export default function AdminLoginPage() {
+  const { toast } = useToast();
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email === 'Subhamkumarsahu12@gmail.com' && password === '123456') {
+      toast({
+        title: "Login Successful",
+        description: "Redirecting to your portfolio...",
+      });
+      router.push('/portfolio');
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Invalid email or password.",
+      });
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-black">
-      <GhostCursor
-        color="#B19EEF"
-        brightness={1}
-        edgeIntensity={0}
-        trailLength={50}
-        inertia={0.5}
-        grainIntensity={0.05}
-        bloomStrength={0.1}
-        bloomRadius={1.0}
-        bloomThreshold={0.025}
-        fadeDelayMs={1000}
-        fadeDurationMs={1500}
-      />
-      <Header />
-      <main className="flex-grow pt-20 bg-gradient-to-b from-[#0A2A64] to-black">
-        <HeroSection />
-        <AboutSection />
-        <SkillsSection />
-        <ExperienceSection />
-        <ServicesSection />
-        <ProjectsSection />
-        <ContactSection />
-      </main>
-      <Footer />
+    <div className="flex min-h-screen flex-col items-center justify-center bg-black bg-gradient-to-b from-[#0A2A64] to-black p-4">
+      <Card className="w-full max-w-md bg-black/20 backdrop-blur-lg border border-white/10 text-white">
+        <CardHeader>
+          <CardTitle className="text-2xl font-headline text-center">Admin Panel</CardTitle>
+          <CardDescription className="text-center text-gray-400">
+            Please sign in to continue.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="admin@example.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-slate-800/50 border-slate-700"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="********"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-slate-800/50 border-slate-700"
+              />
+            </div>
+            <Button type="submit" className="w-full" size="lg">
+              Login
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
