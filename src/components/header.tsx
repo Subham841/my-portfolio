@@ -41,7 +41,7 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-1/2 right-4 -translate-y-1/2 z-50 flex flex-col items-center"
+        "fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center"
       )}
     >
         <Dock items={dockItems} />
