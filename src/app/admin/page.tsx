@@ -179,7 +179,7 @@ const AdminPage = () => {
         setEditingProject(project);
         setProjectTitle(project.title);
         setProjectDescription(project.description);
-        setProjectTech(project.technologies.join(', '));
+        setProjectTech(project.technologies ? project.technologies.join(', ') : '');
         setProjectRole(project.role);
         setProjectImageUrl(project.imageUrl);
     } else {
@@ -194,7 +194,7 @@ const AdminPage = () => {
     const projectData = {
         title: projectTitle,
         description: projectDescription,
-        technologies: projectTech.split(',').map(t => t.trim()),
+        technologies: projectTech ? projectTech.split(',').map(t => t.trim()) : [],
         role: projectRole,
         imageUrl: projectImageUrl,
     };
@@ -427,7 +427,7 @@ const AdminPage = () => {
                           <TableRow key={project.id} className="hover:bg-slate-900/50 border-b border-white/10">
                             <TableCell className="font-medium">{project.title}</TableCell>
                             <TableCell>{project.role}</TableCell>
-                            <TableCell>{project.technologies.join(', ')}</TableCell>
+                            <TableCell>{project.technologies?.join(', ') || ''}</TableCell>
                             <TableCell className="text-right">
                               <Button variant="ghost" size="icon" className="mr-2" onClick={() => handleOpenProjectDialog(project)}>
                                 <Edit className="h-4 w-4" />
@@ -501,3 +501,5 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+
+    
