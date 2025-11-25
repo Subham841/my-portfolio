@@ -7,7 +7,12 @@ import ServicesSection from "@/components/sections/services-section";
 import ProjectsSection from "@/components/sections/projects-section";
 import ContactSection from "@/components/sections/contact-section";
 import Footer from "@/components/footer";
-import GhostCursor from "@/components/GhostCursor";
+import dynamic from "next/dynamic";
+
+const GhostCursor = dynamic(() => import("@/components/GhostCursor"), {
+  ssr: false,
+});
+
 
 export default function PortfolioPage() {
   return (
