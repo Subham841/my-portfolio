@@ -24,6 +24,7 @@ const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -31,7 +32,21 @@ const Header = () => {
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    const handleScroll = () => {
+        if (window.scrollY > 100) {
+            setIsVisible(false);
+        } else {
+            setIsVisible(true);
+        }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+        window.removeEventListener('resize', checkMobile);
+        window.removeEventListener('scroll', handleScroll);
+    }
   }, []);
 
   const scrollToSection = (href: string) => {
@@ -83,7 +98,8 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-full px-4"
+        "fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-full px-4 transition-opacity duration-300",
+        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
     >
         <Dock 
