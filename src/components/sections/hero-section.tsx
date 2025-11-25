@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -7,6 +8,7 @@ import { ArrowDown } from 'lucide-react';
 import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
+import DarkVeil from '../DarkVeil';
 
 const HeroSection = () => {
   const { firestore } = useFirebase();
@@ -22,6 +24,15 @@ const HeroSection = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center text-white overflow-hidden py-20">
+       <DarkVeil
+        speed={0.2}
+        hueShift={180}
+        noiseIntensity={0.03}
+        scanlineIntensity={0.05}
+        scanlineFrequency={200}
+        warpAmount={0.1}
+        resolutionScale={0.5}
+      />
       <div className="container mx-auto px-4 md:px-6 z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center order-1 md:order-2">
@@ -64,7 +75,7 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
         <Link href="#about" aria-label="Scroll to about section">
           <ArrowDown className="w-8 h-8 text-gray-400 animate-bounce"/>
         </Link>
