@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import Dock from "@/components/Dock";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 
 const navItems = [
@@ -29,6 +30,16 @@ const navItems = [
 
 const Header = () => {
   const pathname = usePathname();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const scrollToSection = (href: string) => {
     if (pathname !== '/portfolio') {
@@ -40,8 +51,20 @@ const Header = () => {
       }
     }
   };
+  
+  const iconSize = isMobile ? 24 : 28;
 
-  const dockItems = navItems.map(item => ({
+  const mobileNavItems = [
+    { label: "Home", href: "/portfolio#home", icon: <Home size={iconSize} /> },
+    { label: "About", href: "/portfolio#about", icon: <User size={iconSize} /> },
+    { label: "Skills", href: "/portfolio#skills", icon: <Wrench size={iconSize} /> },
+    { label: "Experience", href: "/portfolio#experience", icon: <Briefcase size={iconSize} /> },
+    { label: "Services", href: "/portfolio#services", icon: <Server size={iconSize} /> },
+    { label: "Projects", href: "/portfolio#projects", icon: <FolderKanban size={iconSize} /> },
+    { label: "Contact", href: "/portfolio#contact", icon: <Mail size={iconSize} /> },
+  ];
+
+  const dockItems = mobileNavItems.map(item => ({
     icon: (
       <button 
         onClick={() => scrollToSection(item.href)} 
@@ -62,10 +85,16 @@ const Header = () => {
   return (
     <header
       className={cn(
-        "fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center"
+        "fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-full px-4"
       )}
     >
-        <Dock items={dockItems} />
+        <Dock 
+          items={dockItems}
+          baseItemSize={isMobile ? 40 : 50}
+          magnification={isMobile ? 60 : 70}
+          distance={isMobile ? 150 : 200}
+          panelHeight={isMobile ? 52 : 68}
+        />
     </header>
   );
 };
