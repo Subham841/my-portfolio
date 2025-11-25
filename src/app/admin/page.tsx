@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { MessageSquare, FolderKanban, Trash2, Edit, User as UserIcon } from "lucide-react";
+import { MessageSquare, FolderKanban, Trash2, Edit, User as UserIcon, Wrench } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +53,13 @@ type Project = {
   imageUrl: string;
 };
 
+type Skill = {
+  id: string;
+  name: string;
+  icon: string;
+  gradient: string;
+}
+
 const AdminPage = () => {
   const router = useRouter();
   const { firestore, auth } = useFirebase();
@@ -61,9 +68,11 @@ const AdminPage = () => {
   
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
   
   const [loadingContacts, setLoadingContacts] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(true);
+  const [loadingSkills, setLoadingSkills] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -78,6 +87,14 @@ const AdminPage = () => {
   const [projectRole, setProjectRole] = useState("");
   const [projectImageUrl, setProjectImageUrl] = useState("");
   
+  // Skill form state
+  const [isSkillDialogOpen, setIsSkillDialogOpen] = useState(false);
+  const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
+  const [skillName, setSkillName] = useState("");
+  const [skillIcon, setSkillIcon] = useState("");
+  const [skillGradient, setSkillGradient] = useState("");
+
+
   // Profile Photo state
   const [profileImageUrl, setProfileImageUrl] = useState("");
   const [currentProfileImageUrl, setCurrentProfileImageUrl] = useState("");
@@ -133,6 +150,26 @@ const AdminPage = () => {
     }
   };
 
+  const fetchSkills = async () => {
+    if (!firestore) return;
+    setLoadingSkills(true);
+    try {
+      const skillsCollection = collection(firestore, "skills");
+      const q = query(skillsCollection);
+      const querySnapshot = await getDocs(q);
+      const skillsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Skill, "id">),
+      }));
+      setSkills(skillsData);
+    } catch (e: any) {
+        toast({ variant: "destructive", title: "Could not load skills.", description: e.message });
+    } finally {
+        setLoadingSkills(false);
+    }
+  };
+
+
   const fetchProfileImage = async () => {
     if (!firestore) return;
     setLoadingProfile(true);
@@ -156,6 +193,7 @@ const AdminPage = () => {
     if (firestore && isAuthenticated && user) {
       fetchContacts();
       fetchProjects();
+      fetchSkills();
       fetchProfileImage();
     }
   }, [firestore, isAuthenticated, user]);
@@ -200,14 +238,12 @@ const AdminPage = () => {
     };
 
     if (editingProject) {
-        // Update existing project
         updateDocumentNonBlocking(doc(firestore, "projects", editingProject.id), projectData);
         toast({
             title: "Project Updated",
             description: "Your project has been successfully updated.",
         });
     } else {
-        // Add new project
         addDocumentNonBlocking(collection(firestore, "projects"), projectData);
         toast({
             title: "Project Added",
@@ -217,7 +253,6 @@ const AdminPage = () => {
     
     resetProjectForm();
     setIsProjectDialogOpen(false);
-    // It can take a moment for data to sync, so we optimistically re-fetch
     setTimeout(() => fetchProjects(), 500); 
   };
 
@@ -231,13 +266,72 @@ const AdminPage = () => {
               title: "Project Deleted",
               description: "The project has been successfully deleted.",
             });
-            fetchProjects(); // Re-fetch projects after deletion is successful
+            fetchProjects();
         })
         .catch((e: any) => {
             toast({
                 variant: "destructive",
                 title: "Error Deleting Project",
                 description: e.message || "Could not delete the project.",
+            });
+        });
+  };
+
+  const resetSkillForm = () => {
+    setSkillName("");
+    setSkillIcon("");
+    setSkillGradient("");
+    setEditingSkill(null);
+  };
+
+  const handleOpenSkillDialog = (skill: Skill | null) => {
+    if (skill) {
+      setEditingSkill(skill);
+      setSkillName(skill.name);
+      setSkillIcon(skill.icon);
+      setSkillGradient(skill.gradient);
+    } else {
+      resetSkillForm();
+    }
+    setIsSkillDialogOpen(true);
+  };
+
+  const handleSkillFormSubmit = () => {
+    if (!firestore) return;
+
+    const skillData = {
+      name: skillName,
+      icon: skillIcon,
+      gradient: skillGradient,
+    };
+
+    if (editingSkill) {
+      updateDocumentNonBlocking(doc(firestore, "skills", editingSkill.id), skillData);
+      toast({ title: "Skill Updated" });
+    } else {
+      addDocumentNonBlocking(collection(firestore, "skills"), skillData);
+      toast({ title: "Skill Added" });
+    }
+
+    resetSkillForm();
+    setIsSkillDialogOpen(false);
+    setTimeout(() => fetchSkills(), 500);
+  };
+  
+  const handleDeleteSkill = (skillId: string) => {
+    if (!firestore) return;
+    if (!confirm("Are you sure you want to delete this skill?")) return;
+
+    deleteDoc(doc(firestore, "skills", skillId))
+        .then(() => {
+            toast({ title: "Skill Deleted" });
+            fetchSkills();
+        })
+        .catch((e: any) => {
+            toast({
+                variant: "destructive",
+                title: "Error Deleting Skill",
+                description: e.message || "Could not delete the skill.",
             });
         });
   };
@@ -251,7 +345,6 @@ const AdminPage = () => {
       description: "Your profile photo has been updated.",
     });
     setIsProfileDialogOpen(false);
-    // It can take a moment for data to sync, so we optimistically re-fetch
     setTimeout(() => fetchProfileImage(), 500);
   };
 
@@ -317,6 +410,20 @@ const AdminPage = () => {
                 <div className="text-2xl font-bold">{loadingProjects ? <Skeleton className="h-8 w-16" /> : projects.length}</div>
                 <p className="text-xs text-muted-foreground">
                   Projects in your portfolio
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-black/20 backdrop-blur-lg border border-white/10">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Skills
+                </CardTitle>
+                <Wrench className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{loadingSkills ? <Skeleton className="h-8 w-16" /> : skills.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Skills in your portfolio
                 </p>
               </CardContent>
             </Card>
@@ -441,6 +548,88 @@ const AdminPage = () => {
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-black/20 backdrop-blur-lg border border-white/10">
+              <CardHeader className="flex flex-row justify-between items-center">
+                <CardTitle className="font-headline text-2xl">
+                  Manage Skills
+                </CardTitle>
+                <Dialog open={isSkillDialogOpen} onOpenChange={(isOpen) => {
+                  setIsSkillDialogOpen(isOpen);
+                  if (!isOpen) {
+                    resetSkillForm();
+                  }
+                }}>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => handleOpenSkillDialog(null)}>Add New Skill</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-700">
+                    <DialogHeader>
+                      <DialogTitle>{editingSkill ? "Edit Skill" : "Add New Skill"}</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="s-name" className="text-right">Name</Label>
+                        <Input id="s-name" value={skillName} onChange={(e) => setSkillName(e.target.value)} className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="s-icon" className="text-right">Icon</Label>
+                        <Input id="s-icon" value={skillIcon} onChange={(e) => setSkillIcon(e.target.value)} className="col-span-3" placeholder="e.g., Database, django, python" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="s-gradient" className="text-right">Gradient</Label>
+                        <Input id="s-gradient" value={skillGradient} onChange={(e) => setSkillGradient(e.target.value)} className="col-span-3" placeholder="e.g., from-green-600/80 to-teal-800/80" />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+                      <Button onClick={handleSkillFormSubmit}>Save Skill</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </CardHeader>
+              <CardContent>
+                {loadingSkills ? (
+                  <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                ) : skills.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    No skills added yet.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="hover:bg-slate-900/50 border-b border-white/10">
+                          <TableHead className="text-white font-semibold">Name</TableHead>
+                          <TableHead className="text-white font-semibold">Icon</TableHead>
+                          <TableHead className="text-white font-semibold">Gradient</TableHead>
+                          <TableHead className="text-right text-white font-semibold">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {skills.map((skill) => (
+                          <TableRow key={skill.id} className="hover:bg-slate-900/50 border-b border-white/10">
+                            <TableCell className="font-medium">{skill.name}</TableCell>
+                            <TableCell>{skill.icon}</TableCell>
+                            <TableCell>{skill.gradient}</TableCell>
+                            <TableCell className="text-right">
+                              <Button variant="ghost" size="icon" className="mr-2" onClick={() => handleOpenSkillDialog(skill)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleDeleteSkill(skill.id)}>
                                 <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
                             </TableCell>

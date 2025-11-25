@@ -20,6 +20,12 @@ service cloud.firestore {
       allow read, list, update, delete: if isSignedIn(); // Admin only
     }
 
+    // Skills: Public read, admin-only write
+    match /skills/{skillId} {
+      allow get, list: if true;
+      allow write: if isSignedIn(); // Admin only
+    }
+
     // Settings: Public read, admin-only write
     match /settings/{settingId} {
       allow get: if true;

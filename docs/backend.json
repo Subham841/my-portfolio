@@ -26,6 +26,17 @@
       },
       "required": ["name", "email", "message", "submittedAt"]
     },
+    "Skill": {
+      "title": "Skill",
+      "type": "object",
+      "description": "Represents a technical skill.",
+      "properties": {
+        "name": { "type": "string" },
+        "icon": { "type": "string", "description": "Lucide icon name, or 'django'/'python' for custom icons." },
+        "gradient": { "type": "string", "description": "Tailwind CSS gradient classes, e.g., 'from-green-600/80 to-teal-800/80'" }
+      },
+      "required": ["name", "icon", "gradient"]
+    },
     "Settings": {
         "title": "Site Settings",
         "type": "object",
@@ -46,6 +57,10 @@
     "/contacts/{contactId}": {
       "schema": { "$ref": "#/entities/Contact" },
       "description": "Stores contact form submissions. Writable by anyone, but readable only by an authenticated admin."
+    },
+    "/skills/{skillId}": {
+      "schema": { "$ref": "#/entities/Skill" },
+      "description": "Stores technical skills. Publicly readable."
     },
     "/settings/{settingId}": {
         "schema": { "$ref": "#/entities/Settings" },
