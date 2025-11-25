@@ -221,24 +221,25 @@ const AdminPage = () => {
     setTimeout(() => fetchProjects(), 500); 
   };
 
-  const handleDeleteProject = async (projectId: string) => {
+  const handleDeleteProject = (projectId: string) => {
     if (!firestore) return;
     if (!confirm("Are you sure you want to delete this project?")) return;
 
-    try {
-        await deleteDoc(doc(firestore, "projects", projectId));
-        toast({
-          title: "Project Deleted",
-          description: "The project has been successfully deleted.",
+    deleteDoc(doc(firestore, "projects", projectId))
+        .then(() => {
+            toast({
+              title: "Project Deleted",
+              description: "The project has been successfully deleted.",
+            });
+            fetchProjects(); // Re-fetch projects after deletion is successful
+        })
+        .catch((e: any) => {
+            toast({
+                variant: "destructive",
+                title: "Error Deleting Project",
+                description: e.message || "Could not delete the project.",
+            });
         });
-        fetchProjects(); // Re-fetch projects after deletion
-    } catch (e: any) {
-        toast({
-            variant: "destructive",
-            title: "Error Deleting Project",
-            description: e.message || "Could not delete the project.",
-        });
-    }
   };
 
   const handleUpdateProfileImage = () => {
@@ -508,3 +509,5 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+
+    
