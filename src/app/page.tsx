@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import ElectricBorder from "@/components/ElectricBorder";
+import Link from "next/link";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -71,10 +72,15 @@ const LoginPage = () => {
                   className="mt-2"
                 />
               </div>
-              <div className="text-center pt-2">
-                <Button type="submit" size="lg" className="w-full">
+              <div className="text-center pt-2 flex flex-col sm:flex-row gap-4">
+                <Button type="submit" size="lg" className="flex-1">
                   Login
                 </Button>
+                 <Link href="/portfolio" className="flex-1">
+                    <Button variant="outline" size="lg" className="w-full">
+                        Back to Home
+                    </Button>
+                </Link>
               </div>
             </form>
           </div>
