@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from 'next/image';
@@ -8,8 +7,6 @@ import { ArrowDown } from 'lucide-react';
 import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
-import GridScan from '../GridScan';
-
 
 const HeroSection = () => {
   const { firestore } = useFirebase();
@@ -25,20 +22,7 @@ const HeroSection = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center text-white overflow-hidden py-20">
-      <div className="absolute inset-0">
-        <GridScan
-            sensitivity={0.55}
-            lineThickness={1}
-            linesColor="#392e4e"
-            gridScale={0.1}
-            scanColor="#FF9FFC"
-            scanOpacity={0.4}
-            enablePost
-            bloomIntensity={0.6}
-            chromaticAberration={0.002}
-            noiseIntensity={0.01}
-        />
-      </div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A2A64] to-black"></div>
       <div className="container mx-auto px-4 md:px-6 z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center order-1 md:order-2">
