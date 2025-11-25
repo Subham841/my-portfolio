@@ -53,7 +53,7 @@ const ContactSection = () => {
               thickness={2}
               style={{ borderRadius: '1rem' }}
             >
-              <div className="relative w-full max-w-lg mx-auto p-8 bg-black/20 backdrop-blur-lg border border-transparent rounded-2xl shadow-2xl">
+              <div className="relative w-full max-w-lg mx-auto p-6 md:p-8 bg-black/20 backdrop-blur-lg border border-transparent rounded-2xl shadow-2xl">
                 <form onSubmit={handleSubmit} className="space-y-6 text-left">
                   <div>
                     <Label htmlFor="name" className="text-white">Name</Label>
@@ -102,7 +102,7 @@ const ContactSection = () => {
                       className="mt-2 min-h-[100px]"
                     />
                   </div>
-                  <div className="text-center">
+                  <div className="text-center pt-2">
                     <Button type="submit" size="lg" className="w-full">
                       Send Message
                     </Button>

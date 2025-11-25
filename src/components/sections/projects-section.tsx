@@ -37,7 +37,7 @@ const ProjectsSection = () => {
         <div className="grid md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-3xl mx-auto">
           {isLoading ? (
              <div className="bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-6">
-                <Skeleton className="w-full h-64" />
+                <Skeleton className="w-full h-48 md:h-64" />
                 <Skeleton className="h-8 w-1/2 mt-4" />
                 <Skeleton className="h-4 w-1/3 mt-2" />
                 <Skeleton className="h-12 w-full mt-4" />
@@ -61,18 +61,18 @@ const ProjectsSection = () => {
                     alt={project.title}
                     width={600}
                     height={400}
-                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-48 md:h-64 object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
               </div>
-              <div className="p-6">
-                <h3 className="text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
+              <div className="p-4 md:p-6">
+                <h3 className="text-xl md:text-2xl font-headline font-bold text-white mb-2">{project.title}</h3>
                 <p className="text-sm text-gray-400 mb-3"><span className="font-semibold">Role:</span> {project.role}</p>
-                <p className="text-gray-300 mb-4">{project.description}</p>
+                <p className="text-gray-300 mb-4 text-sm md:text-base">{project.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech) => (
-                    <Badge key={tech} variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                    <Badge key={tech} variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
                       {tech}
                     </Badge>
                   ))}

@@ -22,7 +22,7 @@ const HeroSection = () => {
   const profileImageUrl = settings?.profileImageUrl;
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center text-white overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center justify-center text-white overflow-hidden py-20">
       <div className="container mx-auto px-4 md:px-6 z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
@@ -33,7 +33,7 @@ const HeroSection = () => {
               Backend Developer & Web Development Enthusiast
             </p>
             
-             <div className="mt-8 flex gap-4 justify-center md:justify-start">
+             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <Link href="#projects">
                   <GradientText
                     colors={["#6DD5ED", "#3B5998", "#6DD5ED"]}
