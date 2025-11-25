@@ -1,4 +1,4 @@
-import { GraduationCap, School } from 'lucide-react';
+import { Code, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const educationData = [
@@ -6,17 +6,17 @@ const educationData = [
     level: "B.Tech (CSE)",
     institution: "Nalanda Institute of Technology",
     year: "2nd Year",
-    icon: <GraduationCap className="h-8 w-8 text-primary" />,
+    icon: <Code className="h-8 w-8 text-primary" />,
   },
   {
     level: "Higher Secondary",
     institution: "Aarayan Gurukul",
-    icon: <School className="h-8 w-8 text-primary" />,
+    icon: <BookOpen className="h-8 w-8 text-primary" />,
   },
   {
     level: "Matriculation",
     institution: "Odisha Adarsha Vidyalaya",
-    icon: <School className="h-8 w-8 text-primary" />,
+    icon: <BookOpen className="h-8 w-8 text-primary" />,
   },
 ];
 
