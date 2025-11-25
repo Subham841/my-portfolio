@@ -2,9 +2,8 @@
 
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
-import { useFirebase } from '@/firebase/provider';
-import { collection, getDocs, query } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
 
 type Project = {
@@ -19,27 +18,13 @@ type Project = {
 
 const ProjectsSection = () => {
   const { firestore } = useFirebase();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!firestore) return;
-
-    const fetchProjects = async () => {
-      setLoading(true);
-      const projectsCollection = collection(firestore, "projects");
-      const q = query(projectsCollection);
-      const querySnapshot = await getDocs(q);
-      const projectsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Project, "id">),
-      }));
-      setProjects(projectsData);
-      setLoading(false);
-    };
-
-    fetchProjects();
+  const projectsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, "projects"));
   }, [firestore]);
+
+  const { data: projects, isLoading } = useCollection<Project>(projectsQuery);
 
 
   return (
@@ -50,7 +35,7 @@ const ProjectsSection = () => {
           <p className="text-lg text-gray-400 mt-2">A selection of my work.</p>
         </div>
         <div className="grid md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-3xl mx-auto">
-          {loading ? (
+          {isLoading ? (
              <div className="bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-6">
                 <Skeleton className="w-full h-64" />
                 <Skeleton className="h-8 w-1/2 mt-4" />
@@ -62,7 +47,7 @@ const ProjectsSection = () => {
                     <Skeleton className="h-6 w-16" />
                 </div>
             </div>
-          ) : projects.length === 0 ? (
+          ) : !projects || projects.length === 0 ? (
              <div className="text-center py-12 text-gray-400">
                 No projects have been added yet.
               </div>
@@ -102,5 +87,3 @@ const ProjectsSection = () => {
 };
 
 export default ProjectsSection;
-
-    

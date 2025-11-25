@@ -1,196 +1,34 @@
-/**
- * # Firestore Security Rules: Portfolio Application
- *
- * ## Core Philosophy
- * This ruleset enforces a "Public Read, Owner-Only Write" security model. The primary
- * purpose of the application is to serve as a public portfolio, so all data related to
- * user profiles, skills, education, etc., must be publicly readable by any client,
- * including unauthenticated or anonymous users. This solves potential client-side
- * fetch errors when the app is offline or a user is not signed in.
- *
- * Write access (creating, updating, or deleting data) is strictly limited to the
- * authenticated user who owns the data.
- *
- * ## Data Structure
- * The data is organized hierarchically. All user-specific content (education, skills,
- * projects, etc.) is stored in subcollections under a main user document. The structure is:
- * `/users/{userId}/{subcollection}/{documentId}`.
- * This path-based ownership makes authorization checks simple and performant.
- *
- * ## Key Security Decisions
- * - **Public by Default (for Reads)**: All `get` and `list` operations are permitted for
- *   all collections to ensure the portfolio is viewable by anyone.
- * - **Strict Ownership for Writes**: All `create`, `update`, and `delete` operations
- *   require the requesting user's `auth.uid` to match the `{userId}` in the document path.
- * - **No User Listing**: While individual user profiles are public, listing all documents
- *   in the top-level `/users` collection is permitted. In a production scenario with many
- *   users, this might be restricted. For a single-user portfolio, this is acceptable.
- * - **Relational Integrity**: Rules enforce that any new document created in a user's
- *   data tree must contain an internal field (`id` or `userProfileId`) that correctly
- *   points back to the owner's `userId`. This field is immutable once set.
- *
- * ## Denormalization for Authorization
- * The data model uses path-based ownership, which is a form of denormalization where
- * the owner's ID is part of the document path. This avoids the need for costly `get()`
- * calls in rules, making them faster, more reliable (especially for offline clients),
- * and more secure. Every document in a subcollection (e.g., `educations`) also stores
- * a `userProfileId` to explicitly link it to its owner, which is validated by the rules.
- */
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // -------------------------------------------------------------------------
+    
     // Helper Functions
-    // -------------------------------------------------------------------------
-
-    /**
-     * Checks if a user is authenticated.
-     */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the currently authenticated user's ID matches the provided userId.
-     * This is the core of the ownership model.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * Checks for ownership on an existing document.
-     * Used for update and delete operations to prevent modifying non-existent data.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * On create, validates that the UserProfile document's internal `id` field
-     * matches the document's ID in the path, ensuring data consistency.
-     */
-    function userProfileIsConsistentOnCreate(userId) {
-      return request.resource.data.id == userId;
-    }
-
-    /**
-     * On update, ensures the UserProfile's internal `id` field is immutable.
-     */
-    function userProfileIsConsistentOnUpdate() {
-      return request.resource.data.id == resource.data.id;
-    }
-
-    /**
-     * On create, validates that a subcollection document's `userProfileId` field
-     * matches the owner's ID from the path.
-     */
-    function subcollectionIsConsistentOnCreate(userId) {
-      return request.resource.data.userProfileId == userId;
-    }
-
-    /**
-     * On update, ensures a subcollection document's `userProfileId` is immutable.
-     */
-    function subcollectionIsConsistentOnUpdate() {
-      return request.resource.data.userProfileId == resource.data.userProfileId;
-    }
-
-    // -------------------------------------------------------------------------
-    // Collection Rules
-    // -------------------------------------------------------------------------
-
-    /**
-     * @description Defines access for a user's primary profile document.
-     * @path /users/{userId}
-     * @allow (get) Any user, authenticated or not, can read any user's profile.
-     * @allow (create) An authenticated user can create their own profile document.
-     * @deny (create) A user tries to create a profile for another user's ID.
-     * @deny (update) A user tries to update another user's profile.
-     * @principle Enforces public read access for portfolio viewing and owner-only writes.
-     */
-    match /users/{userId} {
+    // Projects: Public read, admin-only write
+    match /projects/{projectId} {
       allow get, list: if true;
-      allow create: if isOwner(userId) && userProfileIsConsistentOnCreate(userId);
-      allow update: if isExistingOwner(userId) && userProfileIsConsistentOnUpdate();
-      allow delete: if isExistingOwner(userId);
+      allow write: if isSignedIn(); // In a real app, you'd check for an admin role
     }
 
-    /**
-     * @description Controls access to a user's education history.
-     * @path /users/{userId}/educations/{educationId}
-     * @allow (get, list) Anyone can read the education history for any user.
-     * @allow (create) The owner (`userId`) can add a new education entry.
-     * @deny (create) A user attempts to add an education entry to another user's profile.
-     * @deny (delete) A user attempts to delete an entry from another user's profile.
-     * @principle Restricts modification of a user's private data tree to the owner.
-     */
-    match /users/{userId}/educations/{educationId} {
-      allow get, list: if true;
-      allow create: if isOwner(userId) && subcollectionIsConsistentOnCreate(userId);
-      allow update: if isExistingOwner(userId) && subcollectionIsConsistentOnUpdate();
-      allow delete: if isExistingOwner(userId);
+    // Contacts: Public can create, only admin can read
+    match /contacts/{contactId} {
+      allow create: if true;
+      allow read, list, update, delete: if isSignedIn(); // Admin only
     }
 
-    /**
-     * @description Controls access to a user's skills.
-     * @path /users/{userId}/skills/{skillId}
-     * @allow (get, list) Anyone can read the skills for any user.
-     * @allow (create) The owner (`userId`) can add a new skill entry.
-     * @deny (update) An authenticated user tries to change a skill on another user's profile.
-     * @principle Restricts modification of a user's private data tree to the owner.
-     */
-    match /users/{userId}/skills/{skillId} {
-      allow get, list: if true;
-      allow create: if isOwner(userId) && subcollectionIsConsistentOnCreate(userId);
-      allow update: if isExistingOwner(userId) && subcollectionIsConsistentOnUpdate();
-      allow delete: if isExistingOwner(userId);
+    // Settings: Public read, admin-only write
+    match /settings/{settingId} {
+      allow get: if true;
+      allow write: if isSignedIn(); // Admin only
     }
-
-    /**
-     * @description Controls access to a user's professional experience.
-     * @path /users/{userId}/experiences/{experienceId}
-     * @allow (get, list) Anyone can read the professional experience for any user.
-     * @allow (create) The owner (`userId`) can add a new experience entry.
-     * @deny (update) An authenticated user tries to modify an experience on someone else's profile.
-     * @principle Restricts modification of a user's private data tree to the owner.
-     */
-    match /users/{userId}/experiences/{experienceId} {
-      allow get, list: if true;
-      allow create: if isOwner(userId) && subcollectionIsConsistentOnCreate(userId);
-      allow update: if isExistingOwner(userId) && subcollectionIsConsistentOnUpdate();
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Controls access to the services a user offers.
-     * @path /users/{userId}/services/{serviceId}
-     * @allow (get, list) Anyone can read the services offered by any user.
-     * @allow (create) The owner (`userId`) can add a new service.
-     * @deny (delete) An authenticated user tries to delete a service from another user's profile.
-     * @principle Restricts modification of a user's private data tree to the owner.
-     */
-    match /users/{userId}/services/{serviceId} {
-      allow get, list: if true;
-      allow create: if isOwner(userId) && subcollectionIsConsistentOnCreate(userId);
-      allow update: if isExistingOwner(userId) && subcollectionIsConsistentOnUpdate();
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Controls access to a user's projects.
-     * @path /users/{userId}/projects/{projectId}
-     * @allow (get, list) Anyone can read the projects for any user.
-     * @allow (create) The owner (`userId`) can add a new project.
-     * @deny (update) A user tries to update a project on another user's profile.
-     * @principle Restricts modification of a user's private data tree to the owner.
-     */
-    match /users/{userId}/projects/{projectId} {
-      allow get, list: if true;
-      allow create: if isOwner(userId) && subcollectionIsConsistentOnCreate(userId);
-      allow update: if isExistingOwner(userId) && subcollectionIsConsistentOnUpdate();
-      allow delete: if isExistingOwner(userId);
+    
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

@@ -5,36 +5,21 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowDown } from 'lucide-react';
 import GradientText from '../GradientText';
-import { useFirebase } from '@/firebase/provider';
-import { doc, getDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
 
 const HeroSection = () => {
   const { firestore } = useFirebase();
-  const [profileImageUrl, setProfileImageUrl] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!firestore) return;
-
-    const fetchProfileImage = async () => {
-      setLoading(true);
-      const settingsDoc = doc(firestore, "settings", "main");
-      try {
-        const docSnap = await getDoc(settingsDoc);
-        if (docSnap.exists()) {
-          setProfileImageUrl(docSnap.data().profileImageUrl);
-        }
-      } catch (error) {
-        console.error("Error fetching profile image:", error);
-      }
-      setLoading(false);
-    };
-
-    fetchProfileImage();
+  
+  const settingsRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, "settings", "main");
   }, [firestore]);
 
+  const { data: settings, isLoading } = useDoc(settingsRef);
+
+  const profileImageUrl = settings?.profileImageUrl;
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center text-white overflow-hidden">
@@ -72,7 +57,7 @@ const HeroSection = () => {
           <div className="flex justify-center">
             <div className="relative w-64 h-64 md:w-80 md:h-80">
               <div className="absolute inset-0 bg-primary rounded-full blur-2xl animate-pulse"></div>
-              {loading ? (
+              {isLoading ? (
                  <Skeleton className="relative w-full h-full rounded-full border-4 border-slate-800 shadow-2xl" />
               ) : profileImageUrl ? (
                 <Image

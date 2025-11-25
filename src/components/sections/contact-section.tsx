@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import ElectricBorder from "../ElectricBorder";
-import { useFirebase } from "@/firebase/provider";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { useFirebase } from "@/firebase";
+import { collection, serverTimestamp } from "firebase/firestore";
+import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -18,35 +19,26 @@ const ContactSection = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!firestore) return;
     
-    try {
-      await addDoc(collection(firestore, "contacts"), {
-        name,
-        mobile,
-        email,
-        message,
-        submittedAt: serverTimestamp(),
-      });
+    addDocumentNonBlocking(collection(firestore, "contacts"), {
+      name,
+      mobile,
+      email,
+      message,
+      submittedAt: serverTimestamp(),
+    });
 
-      toast({
-        title: "Form Submitted!",
-        description: "Thank you for your message. I will get back to you soon.",
-      });
-      setName("");
-      setMobile("");
-      setEmail("");
-      setMessage("");
-    } catch (error) {
-      console.error("Error adding document: ", error);
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-      });
-    }
+    toast({
+      title: "Form Submitted!",
+      description: "Thank you for your message. I will get back to you soon.",
+    });
+    setName("");
+    setMobile("");
+    setEmail("");
+    setMessage("");
   };
 
   return (

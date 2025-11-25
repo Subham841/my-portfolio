@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFirebase } from "@/firebase/provider";
-import { collection, getDocs, orderBy, query, addDoc, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { useFirebase } from "@/firebase";
+import { collection, getDocs, orderBy, query, addDoc, deleteDoc, doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import {
   Table,
   TableBody,
@@ -31,6 +31,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+
 
 type Contact = {
   id: string;
@@ -38,10 +40,7 @@ type Contact = {
   mobile: string;
   email: string;
   message: string;
-  submittedAt: {
-    seconds: number;
-    nanoseconds: number;
-  };
+  submittedAt: Timestamp;
 };
 
 type Project = {
@@ -143,79 +142,52 @@ const AdminPage = () => {
     router.push("/");
   };
   
-  const handleAddProject = async () => {
+  const handleAddProject = () => {
     if (!firestore) return;
-
-    try {
-        await addDoc(collection(firestore, "projects"), {
-            title: projectTitle,
-            description: projectDescription,
-            technologies: projectTech.split(',').map(t => t.trim()),
-            role: projectRole,
-            imageUrl: projectImageUrl,
-        });
-        toast({
-            title: "Project Added",
-            description: "Your new project has been saved.",
-        });
-        // Reset form and close dialog
-        setProjectTitle("");
-        setProjectDescription("");
-        setProjectTech("");
-        setProjectRole("");
-        setProjectImageUrl("");
-        setIsProjectDialogOpen(false);
-        fetchProjects(); // Re-fetch projects
-    } catch (error) {
-        console.error("Error adding project: ", error);
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Could not save the project.",
-        });
-    }
+    
+    addDocumentNonBlocking(collection(firestore, "projects"), {
+        title: projectTitle,
+        description: projectDescription,
+        technologies: projectTech.split(',').map(t => t.trim()),
+        role: projectRole,
+        imageUrl: projectImageUrl,
+    });
+    toast({
+        title: "Project Added",
+        description: "Your new project has been saved.",
+    });
+    // Reset form and close dialog
+    setProjectTitle("");
+    setProjectDescription("");
+    setProjectTech("");
+    setProjectRole("");
+    setProjectImageUrl("");
+    setIsProjectDialogOpen(false);
+    fetchProjects(); // Re-fetch projects
   };
 
   const handleDeleteProject = async (projectId: string) => {
     if (!firestore) return;
     if (!confirm("Are you sure you want to delete this project?")) return;
 
-    try {
-      await deleteDoc(doc(firestore, "projects", projectId));
-      toast({
-        title: "Project Deleted",
-        description: "The project has been successfully deleted.",
-      });
-      fetchProjects(); // Re-fetch projects
-    } catch (error) {
-      console.error("Error deleting project:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Could not delete the project.",
-      });
-    }
+    deleteDocumentNonBlocking(doc(firestore, "projects", projectId));
+    toast({
+      title: "Project Deleted",
+      description: "The project has been successfully deleted.",
+    });
+    fetchProjects(); // Re-fetch projects
   };
 
-  const handleUpdateProfileImage = async () => {
+  const handleUpdateProfileImage = () => {
     if (!firestore) return;
-    try {
-      const settingsDocRef = doc(firestore, 'settings', 'main');
-      await setDoc(settingsDocRef, { profileImageUrl }, { merge: true });
-      toast({
-        title: "Profile Photo Updated",
-        description: "Your profile photo has been updated.",
-      });
-      setIsProfileDialogOpen(false);
-      fetchProfileImage();
-    } catch (error) {
-      console.error("Error updating profile photo: ", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Could not update the profile photo.",
-      });
-    }
+    const settingsDocRef = doc(firestore, 'settings', 'main');
+    setDocumentNonBlocking(settingsDocRef, { profileImageUrl }, { merge: true });
+    toast({
+      title: "Profile Photo Updated",
+      description: "Your profile photo has been updated.",
+    });
+    setIsProfileDialogOpen(false);
+    fetchProfileImage();
   };
 
   if (!isAuthenticated) {
@@ -225,8 +197,6 @@ const AdminPage = () => {
       </div>
     );
   }
-
-  const loading = loadingContacts || loadingProjects || loadingProfile;
 
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 md:p-10">
@@ -445,9 +415,9 @@ const AdminPage = () => {
                             <TableCell>{contact.mobile}</TableCell>
                             <TableCell className="max-w-xs truncate">{contact.message}</TableCell>
                             <TableCell className="text-right">
-                              {new Date(
+                              {contact.submittedAt ? new Date(
                                 contact.submittedAt.seconds * 1000
-                              ).toLocaleDateString()}
+                              ).toLocaleDateString() : 'N/A'}
                             </TableCell>
                           </TableRow>
                         ))}
