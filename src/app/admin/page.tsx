@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
-import { addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+import { addDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 
 
@@ -69,12 +69,14 @@ const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Project form state
+  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [projectTech, setProjectTech] = useState("");
   const [projectRole, setProjectRole] = useState("");
   const [projectImageUrl, setProjectImageUrl] = useState("");
-  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   
   // Profile Photo state
   const [profileImageUrl, setProfileImageUrl] = useState("");
@@ -162,27 +164,58 @@ const AdminPage = () => {
     localStorage.removeItem("isAdminAuthenticated");
     router.push("/");
   };
-  
-  const handleAddProject = () => {
-    if (!firestore) return;
-    
-    addDocumentNonBlocking(collection(firestore, "projects"), {
-        title: projectTitle,
-        description: projectDescription,
-        technologies: projectTech.split(',').map(t => t.trim()),
-        role: projectRole,
-        imageUrl: projectImageUrl,
-    });
-    toast({
-        title: "Project Added",
-        description: "Your new project has been saved.",
-    });
-    // Reset form and close dialog
+
+  const resetProjectForm = () => {
     setProjectTitle("");
     setProjectDescription("");
     setProjectTech("");
     setProjectRole("");
     setProjectImageUrl("");
+    setEditingProject(null);
+  }
+  
+  const handleOpenProjectDialog = (project: Project | null) => {
+    if (project) {
+        setEditingProject(project);
+        setProjectTitle(project.title);
+        setProjectDescription(project.description);
+        setProjectTech(project.technologies.join(', '));
+        setProjectRole(project.role);
+        setProjectImageUrl(project.imageUrl);
+    } else {
+        resetProjectForm();
+    }
+    setIsProjectDialogOpen(true);
+  }
+
+  const handleProjectFormSubmit = () => {
+    if (!firestore) return;
+
+    const projectData = {
+        title: projectTitle,
+        description: projectDescription,
+        technologies: projectTech.split(',').map(t => t.trim()),
+        role: projectRole,
+        imageUrl: projectImageUrl,
+    };
+
+    if (editingProject) {
+        // Update existing project
+        updateDocumentNonBlocking(doc(firestore, "projects", editingProject.id), projectData);
+        toast({
+            title: "Project Updated",
+            description: "Your project has been successfully updated.",
+        });
+    } else {
+        // Add new project
+        addDocumentNonBlocking(collection(firestore, "projects"), projectData);
+        toast({
+            title: "Project Added",
+            description: "Your new project has been saved.",
+        });
+    }
+    
+    resetProjectForm();
     setIsProjectDialogOpen(false);
     // It can take a moment for data to sync, so we optimistically re-fetch
     setTimeout(() => fetchProjects(), 500); 
@@ -324,13 +357,18 @@ const AdminPage = () => {
                 <CardTitle className="font-headline text-2xl">
                   Manage Projects
                 </CardTitle>
-                 <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
+                 <Dialog open={isProjectDialogOpen} onOpenChange={(isOpen) => {
+                    setIsProjectDialogOpen(isOpen);
+                    if (!isOpen) {
+                        resetProjectForm();
+                    }
+                 }}>
                     <DialogTrigger asChild>
-                        <Button>Add New Project</Button>
+                        <Button onClick={() => handleOpenProjectDialog(null)}>Add New Project</Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-700">
                         <DialogHeader>
-                        <DialogTitle>Add New Project</DialogTitle>
+                        <DialogTitle>{editingProject ? "Edit Project" : "Add New Project"}</DialogTitle>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -358,7 +396,7 @@ const AdminPage = () => {
                             <DialogClose asChild>
                                 <Button variant="outline">Cancel</Button>
                             </DialogClose>
-                            <Button onClick={handleAddProject}>Save Project</Button>
+                            <Button onClick={handleProjectFormSubmit}>Save Project</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -391,7 +429,7 @@ const AdminPage = () => {
                             <TableCell>{project.role}</TableCell>
                             <TableCell>{project.technologies.join(', ')}</TableCell>
                             <TableCell className="text-right">
-                              <Button variant="ghost" size="icon" className="mr-2" disabled>
+                              <Button variant="ghost" size="icon" className="mr-2" onClick={() => handleOpenProjectDialog(project)}>
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
@@ -463,5 +501,3 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
-
-    
