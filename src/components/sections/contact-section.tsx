@@ -5,40 +5,42 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ElectricBorder from "../ElectricBorder";
-import { useFirebase } from "@/firebase";
-import { collection, serverTimestamp } from "firebase/firestore";
-import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+import emailjs from '@emailjs/browser';
 
 const ContactSection = () => {
   const { toast } = useToast();
-  const { firestore } = useFirebase();
-  const [name, setName] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const form = useRef<HTMLFormElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!firestore) return;
-    
-    addDocumentNonBlocking(collection(firestore, "contacts"), {
-      name,
-      mobile,
-      email,
-      message,
-      submittedAt: serverTimestamp(),
-    });
+    if (!form.current) return;
+    setIsSubmitting(true);
 
-    toast({
-      title: "Form Submitted!",
-      description: "Thank you for your message. I will get back to you soon.",
+    emailjs.sendForm(
+        'service_8she5yk',
+        'template_ofenzro',
+        form.current,
+        'Zpdz3Axx-ecILKpoo'
+    ).then((result) => {
+        console.log(result.text);
+        toast({
+            title: "Form Submitted!",
+            description: "Thank you for your message. I will get back to you soon.",
+        });
+        form.current?.reset();
+    }, (error) => {
+        console.log(error.text);
+        toast({
+            variant: "destructive",
+            title: "Submission Failed",
+            description: "Something went wrong. Please try again.",
+        });
+    }).finally(() => {
+        setIsSubmitting(false);
     });
-    setName("");
-    setMobile("");
-    setEmail("");
-    setMessage("");
   };
 
   return (
@@ -54,15 +56,14 @@ const ContactSection = () => {
               style={{ borderRadius: '1rem' }}
             >
               <div className="relative w-full max-w-lg mx-auto p-6 md:p-8 bg-black/20 backdrop-blur-lg border border-transparent rounded-2xl shadow-2xl">
-                <form onSubmit={handleSubmit} className="space-y-6 text-left">
+                <form ref={form} onSubmit={handleSubmit} className="space-y-6 text-left">
                   <div>
                     <Label htmlFor="name" className="text-white">Name</Label>
                     <Input
                       id="name"
+                      name="name"
                       type="text"
                       placeholder="Your Name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
                       required
                       className="mt-2"
                     />
@@ -71,10 +72,9 @@ const ContactSection = () => {
                     <Label htmlFor="mobile" className="text-white">Mobile No.</Label>
                     <Input
                       id="mobile"
+                      name="mobile"
                       type="tel"
                       placeholder="Your Mobile Number"
-                      value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
                       required
                       className="mt-2"
                     />
@@ -83,10 +83,9 @@ const ContactSection = () => {
                     <Label htmlFor="email" className="text-white">Email</Label>
                     <Input
                       id="email"
+                      name="email"
                       type="email"
                       placeholder="Your Email Address"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                       required
                       className="mt-2"
                     />
@@ -95,16 +94,15 @@ const ContactSection = () => {
                     <Label htmlFor="message" className="text-white">Message</Label>
                     <Textarea
                       id="message"
+                      name="message"
                       placeholder="Your message"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
                       required
                       className="mt-2 min-h-[100px]"
                     />
                   </div>
                   <div className="text-center pt-2">
-                    <Button type="submit" size="lg" className="w-full">
-                      Send Message
+                    <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting ? "Sending..." : "Send Message"}
                     </Button>
                   </div>
                 </form>
