@@ -59,7 +59,7 @@ const Header = () => {
     { label: "Services", href: "/portfolio#services", icon: <Server size={iconSize} /> },
     { label: "Projects", href: "/portfolio#projects", icon: <FolderKanban size={iconSize} /> },
     { label: "Contact", href: "/portfolio#contact", icon: <Mail size={iconSize} /> },
-    { label: "Admin", href: "/admin", icon: <Shield size={iconSize} /> },
+    { label: "Admin", href: "/", icon: <Shield size={iconSize} /> },
   ];
 
   const dockItems = mobileNavItems.map(item => ({
@@ -89,7 +89,7 @@ const Header = () => {
         <Dock 
           items={dockItems}
           baseItemSize={isMobile ? 40 : 50}
-          magnification={isMobile ? 60 : 70}
+          magnification={isMobile ? 50 : 60}
           distance={isMobile ? 150 : 200}
           panelHeight={isMobile ? 52 : 68}
         />
