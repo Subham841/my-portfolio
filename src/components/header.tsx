@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -11,25 +12,17 @@ import {
   FolderKanban,
   Mail,
   PanelTop,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Dock from "@/components/Dock";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 
-const navItems = [
-  { label: "Home", href: "/portfolio#home", icon: <Home size={28} /> },
-  { label: "About", href: "/portfolio#about", icon: <User size={28} /> },
-  { label: "Skills", href: "/portfolio#skills", icon: <Wrench size={28} /> },
-  { label: "Experience", href: "/portfolio#experience", icon: <Briefcase size={28} /> },
-  { label: "Services", href: "/portfolio#services", icon: <Server size={28} /> },
-  { label: "Projects", href: "/portfolio#projects", icon: <FolderKanban size={28} /> },
-  { label: "Contact", href: "/portfolio#contact", icon: <Mail size={28} /> },
-];
-
 const Header = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -42,6 +35,10 @@ const Header = () => {
   }, []);
 
   const scrollToSection = (href: string) => {
+    if (href.startsWith('/')) {
+        router.push(href);
+        return;
+    }
     if (pathname !== '/portfolio') {
       window.location.href = href;
     } else {
@@ -62,6 +59,7 @@ const Header = () => {
     { label: "Services", href: "/portfolio#services", icon: <Server size={iconSize} /> },
     { label: "Projects", href: "/portfolio#projects", icon: <FolderKanban size={iconSize} /> },
     { label: "Contact", href: "/portfolio#contact", icon: <Mail size={iconSize} /> },
+    { label: "Admin", href: "/admin", icon: <Shield size={iconSize} /> },
   ];
 
   const dockItems = mobileNavItems.map(item => ({
