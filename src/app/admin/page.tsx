@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFirebase, useUser } from "@/firebase";
-import { collection, getDocs, orderBy, query, doc, getDoc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, doc, getDoc, Timestamp, deleteDoc } from "firebase/firestore";
 import {
   Table,
   TableBody,
@@ -225,13 +225,20 @@ const AdminPage = () => {
     if (!firestore) return;
     if (!confirm("Are you sure you want to delete this project?")) return;
 
-    deleteDocumentNonBlocking(doc(firestore, "projects", projectId));
-    toast({
-      title: "Project Deleted",
-      description: "The project has been successfully deleted.",
-    });
-    // It can take a moment for data to sync, so we optimistically re-fetch
-    setTimeout(() => fetchProjects(), 500);
+    try {
+        await deleteDoc(doc(firestore, "projects", projectId));
+        toast({
+          title: "Project Deleted",
+          description: "The project has been successfully deleted.",
+        });
+        fetchProjects(); // Re-fetch projects after deletion
+    } catch (e: any) {
+        toast({
+            variant: "destructive",
+            title: "Error Deleting Project",
+            description: e.message || "Could not delete the project.",
+        });
+    }
   };
 
   const handleUpdateProfileImage = () => {
@@ -501,5 +508,3 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
-
-    
