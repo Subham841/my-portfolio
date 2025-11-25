@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFirebase } from "@/firebase";
-import { collection, getDocs, orderBy, query, addDoc, deleteDoc, doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, doc, getDoc, Timestamp } from "firebase/firestore";
 import {
   Table,
   TableBody,
@@ -91,42 +91,57 @@ const AdminPage = () => {
   const fetchContacts = async () => {
     if (!firestore) return;
     setLoadingContacts(true);
-    const contactsCollection = collection(firestore, "contacts");
-    const q = query(contactsCollection, orderBy("submittedAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    const contactsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<Contact, "id">),
-    }));
-    setContacts(contactsData);
-    setLoadingContacts(false);
+    try {
+      const contactsCollection = collection(firestore, "contacts");
+      const q = query(contactsCollection, orderBy("submittedAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const contactsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Contact, "id">),
+      }));
+      setContacts(contactsData);
+    } catch (e: any) {
+        toast({ variant: "destructive", title: "Could not load contacts.", description: e.message });
+    } finally {
+        setLoadingContacts(false);
+    }
   };
   
   const fetchProjects = async () => {
     if (!firestore) return;
     setLoadingProjects(true);
-    const projectsCollection = collection(firestore, "projects");
-    const q = query(projectsCollection);
-    const querySnapshot = await getDocs(q);
-    const projectsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<Project, "id">),
-    }));
-    setProjects(projectsData);
-    setLoadingProjects(false);
+    try {
+      const projectsCollection = collection(firestore, "projects");
+      const q = query(projectsCollection);
+      const querySnapshot = await getDocs(q);
+      const projectsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Project, "id">),
+      }));
+      setProjects(projectsData);
+    } catch (e: any) {
+        toast({ variant: "destructive", title: "Could not load projects.", description: e.message });
+    } finally {
+        setLoadingProjects(false);
+    }
   };
 
   const fetchProfileImage = async () => {
     if (!firestore) return;
     setLoadingProfile(true);
-    const settingsDoc = doc(firestore, "settings", "main");
-    const docSnap = await getDoc(settingsDoc);
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      setProfileImageUrl(data.profileImageUrl || "");
-      setCurrentProfileImageUrl(data.profileImageUrl || "");
+    try {
+      const settingsDoc = doc(firestore, "settings", "main");
+      const docSnap = await getDoc(settingsDoc);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfileImageUrl(data.profileImageUrl || "");
+        setCurrentProfileImageUrl(data.profileImageUrl || "");
+      }
+    } catch (e: any) {
+        toast({ variant: "destructive", title: "Could not load profile photo.", description: e.message });
+    } finally {
+      setLoadingProfile(false);
     }
-    setLoadingProfile(false);
   }
 
   useEffect(() => {
@@ -163,7 +178,8 @@ const AdminPage = () => {
     setProjectRole("");
     setProjectImageUrl("");
     setIsProjectDialogOpen(false);
-    fetchProjects(); // Re-fetch projects
+    // It can take a moment for data to sync, so we optimistically re-fetch
+    setTimeout(() => fetchProjects(), 500); 
   };
 
   const handleDeleteProject = async (projectId: string) => {
@@ -175,7 +191,8 @@ const AdminPage = () => {
       title: "Project Deleted",
       description: "The project has been successfully deleted.",
     });
-    fetchProjects(); // Re-fetch projects
+    // It can take a moment for data to sync, so we optimistically re-fetch
+    setTimeout(() => fetchProjects(), 500);
   };
 
   const handleUpdateProfileImage = () => {
@@ -187,7 +204,8 @@ const AdminPage = () => {
       description: "Your profile photo has been updated.",
     });
     setIsProfileDialogOpen(false);
-    fetchProfileImage();
+    // It can take a moment for data to sync, so we optimistically re-fetch
+    setTimeout(() => fetchProfileImage(), 500);
   };
 
   if (!isAuthenticated) {
