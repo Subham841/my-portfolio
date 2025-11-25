@@ -1,12 +1,40 @@
+"use client";
+
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowDown } from 'lucide-react';
 import GradientText from '../GradientText';
+import { useFirebase } from '@/firebase/provider';
+import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '../ui/skeleton';
 
 const HeroSection = () => {
-  const profileImage = PlaceHolderImages.find((img) => img.id === 'profile');
+  const { firestore } = useFirebase();
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!firestore) return;
+
+    const fetchProfileImage = async () => {
+      setLoading(true);
+      const settingsDoc = doc(firestore, "settings", "main");
+      try {
+        const docSnap = await getDoc(settingsDoc);
+        if (docSnap.exists()) {
+          setProfileImageUrl(docSnap.data().profileImageUrl);
+        }
+      } catch (error) {
+        console.error("Error fetching profile image:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchProfileImage();
+  }, [firestore]);
+
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center text-white overflow-hidden">
@@ -44,16 +72,21 @@ const HeroSection = () => {
           <div className="flex justify-center">
             <div className="relative w-64 h-64 md:w-80 md:h-80">
               <div className="absolute inset-0 bg-primary rounded-full blur-2xl animate-pulse"></div>
-              {profileImage && (
+              {loading ? (
+                 <Skeleton className="relative w-full h-full rounded-full border-4 border-slate-800 shadow-2xl" />
+              ) : profileImageUrl ? (
                 <Image
-                  src={profileImage.imageUrl}
-                  alt={profileImage.description}
+                  src={profileImageUrl}
+                  alt="Subham Kumar Sahu"
                   width={400}
                   height={400}
-                  data-ai-hint={profileImage.imageHint}
                   className="relative w-full h-full object-cover rounded-full border-4 border-slate-800 shadow-2xl"
                   priority
                 />
+              ) : (
+                <div className="relative w-full h-full object-cover rounded-full border-4 border-slate-800 shadow-2xl bg-gray-700 flex items-center justify-center">
+                  <span className="text-gray-400">No Image</span>
+                </div>
               )}
             </div>
           </div>

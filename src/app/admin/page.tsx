@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFirebase } from "@/firebase/provider";
-import { collection, getDocs, orderBy, query, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, addDoc, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import {
   Table,
   TableBody,
@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { MessageSquare, FolderKanban, Trash2, Edit } from "lucide-react";
+import { MessageSquare, FolderKanban, Trash2, Edit, User as UserIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 type Contact = {
   id: string;
@@ -64,6 +63,7 @@ const AdminPage = () => {
   
   const [loadingContacts, setLoadingContacts] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -74,8 +74,11 @@ const AdminPage = () => {
   const [projectRole, setProjectRole] = useState("");
   const [projectImageUrl, setProjectImageUrl] = useState("");
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
-
-  const profileImage = PlaceHolderImages.find((img) => img.id === 'profile');
+  
+  // Profile Photo state
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [currentProfileImageUrl, setCurrentProfileImageUrl] = useState("");
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
 
   useEffect(() => {
     const authStatus = localStorage.getItem("isAdminAuthenticated");
@@ -114,10 +117,24 @@ const AdminPage = () => {
     setLoadingProjects(false);
   };
 
+  const fetchProfileImage = async () => {
+    if (!firestore) return;
+    setLoadingProfile(true);
+    const settingsDoc = doc(firestore, "settings", "main");
+    const docSnap = await getDoc(settingsDoc);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      setProfileImageUrl(data.profileImageUrl || "");
+      setCurrentProfileImageUrl(data.profileImageUrl || "");
+    }
+    setLoadingProfile(false);
+  }
+
   useEffect(() => {
     if (firestore && isAuthenticated) {
       fetchContacts();
       fetchProjects();
+      fetchProfileImage();
     }
   }, [firestore, isAuthenticated]);
 
@@ -180,6 +197,27 @@ const AdminPage = () => {
     }
   };
 
+  const handleUpdateProfileImage = async () => {
+    if (!firestore) return;
+    try {
+      const settingsDocRef = doc(firestore, 'settings', 'main');
+      await setDoc(settingsDocRef, { profileImageUrl }, { merge: true });
+      toast({
+        title: "Profile Photo Updated",
+        description: "Your profile photo has been updated.",
+      });
+      setIsProfileDialogOpen(false);
+      fetchProfileImage();
+    } catch (error) {
+      console.error("Error updating profile photo: ", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not update the profile photo.",
+      });
+    }
+  };
+
   if (!isAuthenticated) {
     return (
        <div className="flex min-h-screen items-center justify-center bg-black">
@@ -188,7 +226,7 @@ const AdminPage = () => {
     );
   }
 
-  const loading = loadingContacts || loadingProjects;
+  const loading = loadingContacts || loadingProjects || loadingProfile;
 
   return (
     <div className="min-h-screen bg-black text-white p-4 sm:p-6 md:p-10">
@@ -196,15 +234,15 @@ const AdminPage = () => {
         <header className="mb-8">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                  {profileImage && (
+                  {currentProfileImageUrl ? (
                     <Image
-                      src={profileImage.imageUrl}
+                      src={currentProfileImageUrl}
                       alt="Admin"
                       width={40}
                       height={40}
-                      className="rounded-full"
+                      className="rounded-full object-cover"
                     />
-                  )}
+                  ) : <Skeleton className="h-10 w-10 rounded-full" />}
                   <h1 className="text-3xl font-bold font-headline">Admin Dashboard</h1>
                 </div>
                 <div className="flex gap-4">
@@ -245,6 +283,38 @@ const AdminPage = () => {
                 <p className="text-xs text-muted-foreground">
                   Projects in your portfolio
                 </p>
+              </CardContent>
+            </Card>
+             <Card className="bg-black/20 backdrop-blur-lg border border-white/10">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Manage Profile
+                </CardTitle>
+                <UserIcon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+                  <DialogTrigger asChild>
+                      <Button className="w-full mt-4">Update Photo</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] bg-slate-900 border-slate-700">
+                      <DialogHeader>
+                      <DialogTitle>Update Profile Photo</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="p-image-url" className="text-right">Image URL</Label>
+                            <Input id="p-image-url" value={profileImageUrl} onChange={(e) => setProfileImageUrl(e.target.value)} className="col-span-3" />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                          <DialogClose asChild>
+                              <Button variant="outline">Cancel</Button>
+                          </DialogClose>
+                          <Button onClick={handleUpdateProfileImage}>Save Photo</Button>
+                      </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
         </div>
