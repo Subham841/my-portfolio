@@ -7,7 +7,6 @@ import { ArrowDown } from 'lucide-react';
 import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
-import LightRays from '../LightRays';
 
 const HeroSection = () => {
   const { firestore } = useFirebase();
@@ -24,16 +23,7 @@ const HeroSection = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center text-white overflow-hidden py-20">
       <div className="absolute inset-0 bg-gradient-to-b from-[#0A2A64] to-black"></div>
-      <LightRays
-        raysColor="#00ffff"
-        raysSpeed={0.8}
-        lightSpread={0.5}
-        rayLength={1.5}
-        mouseInfluence={0.1}
-        noiseAmount={0.05}
-        distortion={0.1}
-        className="opacity-20"
-      />
+      
       <div className="container mx-auto px-4 md:px-6 z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="flex justify-center order-1 md:order-2">
