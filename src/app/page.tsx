@@ -18,7 +18,7 @@ const LoginPage = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, you'd use a more secure authentication method.
-    if (email === "admin@example.com" && password === "password123") {
+    if (email === "subhamkumarsahu207@gmail.com" && password === "Subham@2006") {
       localStorage.setItem("isAdminAuthenticated", "true");
       router.push("/admin");
     } else {
