@@ -1,0 +1,356 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents the profile of a user visiting Subham's portfolio.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's displayed name (e.g., Subham Kumar Sahu)."
+        },
+        "tagline": {
+          "type": "string",
+          "description": "A short tagline describing the user (e.g., Backend Developer & Web Development Enthusiast)."
+        },
+        "bio": {
+          "type": "string",
+          "description": "A brief biography of the user."
+        },
+        "profileImageUrl": {
+          "type": "string",
+          "description": "URL to the user's profile image.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "displayName"
+      ]
+    },
+    "Education": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Education",
+      "type": "object",
+      "description": "Represents the education details of Subham.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Education entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Education)"
+        },
+        "institution": {
+          "type": "string",
+          "description": "The name of the educational institution."
+        },
+        "degree": {
+          "type": "string",
+          "description": "The degree obtained (e.g., B.Tech, Matriculation)."
+        },
+        "fieldOfStudy": {
+          "type": "string",
+          "description": "The field of study (e.g., Computer Science and Engineering)."
+        },
+        "graduationYear": {
+          "type": "number",
+          "description": "The year of graduation."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "institution",
+        "degree"
+      ]
+    },
+    "Skill": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Skill",
+      "type": "object",
+      "description": "Represents a skill possessed by Subham.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Skill entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Skill)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the skill (e.g., Django, Python)."
+        },
+        "level": {
+          "type": "number",
+          "description": "A numerical representation of the skill level (e.g., 1-5)."
+        },
+        "icon": {
+          "type": "string",
+          "description": "Icon URL for the skill",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "name"
+      ]
+    },
+    "Experience": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Experience",
+      "type": "object",
+      "description": "Represents a professional experience of Subham.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Experience entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Experience)"
+        },
+        "role": {
+          "type": "string",
+          "description": "The job title or role (e.g., Training Role)."
+        },
+        "company": {
+          "type": "string",
+          "description": "The name of the company."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the role and responsibilities."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the experience.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the experience. Can be null if ongoing.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "role",
+        "company",
+        "description"
+      ]
+    },
+    "Service": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Service",
+      "type": "object",
+      "description": "Represents a service offered by Subham.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Service entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Service)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the service (e.g., Backend Development)."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the service."
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "name",
+        "description"
+      ]
+    },
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a project completed by Subham.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Project)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the project (e.g., Admin Panel Project)."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the project."
+        },
+        "technologies": {
+          "type": "string",
+          "description": "The technologies used in the project (e.g., Django, Python, SQL)."
+        },
+        "role": {
+          "type": "string",
+          "description": "The role in the project (e.g., Backend Developer)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL to the project image",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "name",
+        "description",
+        "technologies",
+        "role"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile data. Accessible only to the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/educations/{educationId}",
+        "definition": {
+          "entityName": "Education",
+          "schema": {
+            "$ref": "#/backend/entities/Education"
+          },
+          "description": "Stores education details for a specific user. Accessible only to the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "educationId",
+              "description": "The unique identifier for the education entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/skills/{skillId}",
+        "definition": {
+          "entityName": "Skill",
+          "schema": {
+            "$ref": "#/backend/entities/Skill"
+          },
+          "description": "Stores skill information for a specific user. Accessible only to the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "skillId",
+              "description": "The unique identifier for the skill."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/experiences/{experienceId}",
+        "definition": {
+          "entityName": "Experience",
+          "schema": {
+            "$ref": "#/backend/entities/Experience"
+          },
+          "description": "Stores experience details for a specific user. Accessible only to the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "experienceId",
+              "description": "The unique identifier for the experience."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/services/{serviceId}",
+        "definition": {
+          "entityName": "Service",
+          "schema": {
+            "$ref": "#/backend/entities/Service"
+          },
+          "description": "Stores service information for a specific user. Accessible only to the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "serviceId",
+              "description": "The unique identifier for the service."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Stores project details for a specific user. Accessible only to the user with matching userId.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "projectId",
+              "description": "The unique identifier for the project."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to be secure, scalable, and easily debuggable, following the core design principles and strategy mandates. The structure focuses on path-based ownership for user-specific data. This approach eliminates the need for complex security rules that rely on `get()` calls, ensuring authorization independence.\n\n*   **Authorization Independence:** Achieved by avoiding hierarchical authorization dependencies. Security rules will primarily leverage the `request.auth.uid` and path-based ownership to validate access. Since there are no collaborative entities, denormalization is not needed.\n*   **Clarity of Intent:** The structure uses explicit naming conventions and path structures to make the authorization intent clear. For example, `/users/{userId}/educations/{educationId}` clearly indicates that the `education` document is owned by the specified user.\n*   **DBAC (No Custom Claims):** Authorization is based solely on `request.auth.uid`. No custom claims or roles are used.\n*   **QAPs (Rules are not Filters):** The structure enables secure `list` operations. Because data is segregated by user ID, listing operations are naturally scoped and do not require filtering in rules. The use of path-based ownership ensures that only the user can list items under their respective user ID.\n*   **Invariants:** The structure inherently supports the integrity of ownership. Since data is nested under the user's ID, it's clear who owns the data. Timestamps and other invariants can be enforced through rules, but the structure itself doesn't violate any such invariants.\n\nTo address the initial error ('FirebaseError: Failed to get document because the client is offline.. Error source: Firestore Rules'), the proposed structure ensures that rules don't require any `get()` operations that could fail when the client is offline. All necessary information for authorization is available within the `request.auth.uid` and the document path.\n\nThe paths are organized following the principle of path-based ownership, such that entities related to a user are stored under the `/users/{userId}` path. This provides clear ownership and simplifies security rules."
+  }
+}
