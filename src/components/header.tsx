@@ -89,7 +89,7 @@ const Header = () => {
         <Dock 
           items={dockItems}
           baseItemSize={isMobile ? 40 : 50}
-          magnification={isMobile ? 50 : 60}
+          magnification={isMobile ? 40 : 50}
           distance={isMobile ? 150 : 200}
           panelHeight={isMobile ? 52 : 68}
         />
