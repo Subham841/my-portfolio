@@ -139,8 +139,9 @@ const AdminPage = () => {
       const docSnap = await getDoc(settingsDoc);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setProfileImageUrl(data.profileImageUrl || "");
-        setCurrentProfileImageUrl(data.profileImageUrl || "");
+        const url = data.profileImageUrl || "";
+        setProfileImageUrl(url);
+        setCurrentProfileImageUrl(url);
       }
     } catch (e: any) {
         toast({ variant: "destructive", title: "Could not load profile photo.", description: e.message });
@@ -286,7 +287,12 @@ const AdminPage = () => {
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+                <Dialog open={isProfileDialogOpen} onOpenChange={(isOpen) => {
+                    setIsProfileDialogOpen(isOpen);
+                    if (isOpen) {
+                        fetchProfileImage(); // Re-fetch when dialog opens
+                    }
+                }}>
                   <DialogTrigger asChild>
                       <Button className="w-full mt-4">Update Photo</Button>
                   </DialogTrigger>
