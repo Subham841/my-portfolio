@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowDown } from 'lucide-react';
-import GradientText from '../GradientText';
 import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
@@ -56,22 +55,10 @@ const HeroSection = () => {
             
              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <Link href="#projects">
-                  <GradientText
-                    colors={["#6DD5ED", "#3B5998", "#6DD5ED"]}
-                    animationSpeed={4}
-                    className="font-semibold"
-                  >
-                    View Projects
-                  </GradientText>
+                  <Button size="lg">View Projects</Button>
                 </Link>
                 <Link href="#contact">
-                   <GradientText
-                    colors={["#6DD5ED", "#3B5998", "#6DD5ED"]}
-                    animationSpeed={4}
-                    className="font-semibold"
-                  >
-                    Contact Me
-                  </GradientText>
+                   <Button size="lg" variant="outline">Contact Me</Button>
                 </Link>
             </div>
           </div>
