@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFirebase } from "@/firebase";
+import { useFirebase, useUser } from "@/firebase";
 import { collection, getDocs, orderBy, query, doc, getDoc, Timestamp } from "firebase/firestore";
 import {
   Table,
@@ -32,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+import { initiateAnonymousSignIn } from "@/firebase/non-blocking-login";
 
 
 type Contact = {
@@ -54,7 +55,8 @@ type Project = {
 
 const AdminPage = () => {
   const router = useRouter();
-  const { firestore } = useFirebase();
+  const { firestore, auth } = useFirebase();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
   
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -85,8 +87,11 @@ const AdminPage = () => {
       router.push("/");
     } else {
       setIsAuthenticated(true);
+      if (auth && !user && !isUserLoading) {
+        initiateAnonymousSignIn(auth);
+      }
     }
-  }, [router]);
+  }, [router, auth, user, isUserLoading]);
 
   const fetchContacts = async () => {
     if (!firestore) return;
@@ -145,12 +150,12 @@ const AdminPage = () => {
   }
 
   useEffect(() => {
-    if (firestore && isAuthenticated) {
+    if (firestore && isAuthenticated && user) {
       fetchContacts();
       fetchProjects();
       fetchProfileImage();
     }
-  }, [firestore, isAuthenticated]);
+  }, [firestore, isAuthenticated, user]);
 
   const handleLogout = () => {
     localStorage.removeItem("isAdminAuthenticated");
@@ -208,7 +213,7 @@ const AdminPage = () => {
     setTimeout(() => fetchProfileImage(), 500);
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || isUserLoading) {
     return (
        <div className="flex min-h-screen items-center justify-center bg-black">
         <Skeleton className="h-screen w-full" />
@@ -452,3 +457,5 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+
+    
