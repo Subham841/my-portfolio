@@ -9,22 +9,22 @@ import { useToast } from "@/hooks/use-toast";
 import ElectricBorder from "@/components/ElectricBorder";
 
 const LoginPage = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const { toast } = useToast();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "123321") {
-      // In a real app, you'd use a more secure session management method.
-      // For this portfolio, we'll use localStorage for simplicity.
+    // In a real app, you'd use a more secure authentication method.
+    if (email === "admin@example.com" && password === "password123") {
       localStorage.setItem("isAdminAuthenticated", "true");
       router.push("/admin");
     } else {
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: "Incorrect password. Please try again.",
+        description: "Incorrect email or password. Please try again.",
       });
     }
   };
@@ -36,7 +36,7 @@ const LoginPage = () => {
           Admin Login
         </h1>
         <p className="text-lg text-gray-400 mt-2 mb-12">
-          Enter the password to access the admin dashboard.
+          Enter your credentials to access the admin dashboard.
         </p>
         <ElectricBorder
           color="#7df9ff"
@@ -47,6 +47,18 @@ const LoginPage = () => {
         >
           <div className="relative w-full max-w-sm mx-auto p-8 bg-black/20 backdrop-blur-lg border border-transparent rounded-2xl shadow-2xl">
             <form onSubmit={handleLogin} className="space-y-6 text-left">
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@example.com"
+                  required
+                  className="mt-2"
+                />
+              </div>
               <div>
                 <Label htmlFor="password">Password</Label>
                 <Input
@@ -59,7 +71,7 @@ const LoginPage = () => {
                   className="mt-2"
                 />
               </div>
-              <div className="text-center">
+              <div className="text-center pt-2">
                 <Button type="submit" size="lg" className="w-full">
                   Login
                 </Button>
