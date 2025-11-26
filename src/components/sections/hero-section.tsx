@@ -8,6 +8,7 @@ import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
 import SplitText from '../SplitText';
+import TextType from '../TextType';
 
 const HeroSection = () => {
   const { firestore } = useFirebase();
@@ -57,15 +58,18 @@ const HeroSection = () => {
               delay={50}
               splitType="chars"
             />
-             <SplitText
-              text="Backend Developer & Web Development Enthusiast"
-              tag="p"
-              className="text-xl md:text-2xl font-headline text-primary mb-6"
-              textAlign="inherit"
-              delay={20}
-              duration={0.8}
-              splitType="words"
-            />
+             <TextType
+                as="p"
+                text={[
+                  "Backend Developer",
+                  "Web Development Enthusiast",
+                  "Problem Solver"
+                ]}
+                className="text-xl md:text-2xl font-headline text-primary mb-6 min-h-[56px] md:min-h-[32px]"
+                typingSpeed={50}
+                deletingSpeed={30}
+                pauseDuration={1500}
+             />
             
              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <Link href="#projects">
