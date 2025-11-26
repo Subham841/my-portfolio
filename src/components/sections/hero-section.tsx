@@ -7,9 +7,9 @@ import { ArrowDown } from 'lucide-react';
 import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
-import SplitText from '../SplitText';
-import TextType from '../TextType';
-import Ribbons from '../Ribbons';
+import SplitText from '@/components/SplitText';
+import TextType from '@/components/TextType';
+import Ribbons from '@/components/Ribbons';
 
 
 const HeroSection = () => {
