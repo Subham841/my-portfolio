@@ -4,7 +4,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText as GSAPSplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 
-gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
+}
 
 export interface SplitTextProps {
   text: string;
@@ -42,6 +44,7 @@ const SplitText: React.FC<SplitTextProps> = ({
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (document.fonts.status === 'loaded') {
       setFontsLoaded(true);
     } else {
@@ -131,20 +134,9 @@ const SplitText: React.FC<SplitTextProps> = ({
       };
     },
     {
-      dependencies: [
-        text,
-        delay,
-        duration,
-        ease,
-        splitType,
-        JSON.stringify(from),
-        JSON.stringify(to),
-        threshold,
-        rootMargin,
-        fontsLoaded,
-        onLetterAnimationComplete
-      ],
-      scope: ref
+      dependencies: [text, fontsLoaded],
+      scope: ref,
+      revertOnUpdate: true,
     }
   );
 
