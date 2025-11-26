@@ -1,10 +1,11 @@
 import { Database, type LucideIcon } from 'lucide-react';
 import DjangoIcon from '../icons/django-icon';
 import PythonIcon from '../icons/python-icon';
-import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirebase, useCollection } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
 import * as LucideIcons from 'lucide-react';
+import { useMemo } from 'react';
 
 type Skill = {
   id: string;
@@ -22,7 +23,7 @@ const iconComponents: { [key: string]: React.ElementType } = {
 const SkillsSection = () => {
   const { firestore } = useFirebase();
 
-  const skillsQuery = useMemoFirebase(() => {
+  const skillsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, "skills"));
   }, [firestore]);

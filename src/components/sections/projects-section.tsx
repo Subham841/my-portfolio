@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
-import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirebase, useCollection } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
+import { useMemo } from 'react';
 
 type Project = {
   id: string;
@@ -19,7 +20,7 @@ type Project = {
 const ProjectsSection = () => {
   const { firestore } = useFirebase();
 
-  const projectsQuery = useMemoFirebase(() => {
+  const projectsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, "projects"));
   }, [firestore]);

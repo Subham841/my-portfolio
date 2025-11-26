@@ -4,18 +4,19 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowDown } from 'lucide-react';
-import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
+import { useFirebase, useDoc } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
-import SplitText from '@/components/SplitText';
-import TextType from '@/components/TextType';
-import Ribbons from '@/components/Ribbons';
+import SplitText from '../SplitText';
+import TextType from '../TextType';
+import Ribbons from '../Ribbons';
+import { useMemo } from 'react';
 
 
 const HeroSection = () => {
   const { firestore } = useFirebase();
   
-  const settingsRef = useMemoFirebase(() => {
+  const settingsRef = useMemo(() => {
     if (!firestore) return null;
     return doc(firestore, "settings", "main");
   }, [firestore]);
