@@ -1,0 +1,31 @@
+diff --git a/node_modules/gsap/SplitText.js b/node_modules/gsap/SplitText.js
+index 4058f63..7355b29 100644
+--- a/node_modules/gsap/SplitText.js
++++ b/node_modules/gsap/SplitText.js
+@@ -1,3 +1,4 @@
++"use client";
+ /*!
+  * SplitText: 3.12.5
+  * https://gsap.com
+diff --git a/node_modules/gsap/package.json b/node_modules/gsap/package.json
+index 548c27a..0d3c267 100644
+--- a/node_modules/gsap/package.json
++++ b/node_modules/gsap/package.json
+@@ -3,7 +3,7 @@
+   "version": "3.12.5",
+   "description": "GSAP is a robust JavaScript toolset that turns developers into animation superheroes. Build high-performance animations that work in **every** major browser. Animate CSS, SVG, canvas, React, Vue, WebGL, colors, strings, motion paths, generic objects...anything JavaScript can touch!",
+   "main": "dist/gsap.js",
+-  "module": "index.js",
++  "module": "gsap-core.js",
+   "types": "types/index.d.ts",
+   "sideEffects": false,
+   "homepage": "https://gsap.com",
+diff --git a/node_modules/gsap/gsap-core.js b/node_modules/gsap/gsap-core.js
+new file mode 100644
+index 0000000..d4939f4
+--- /dev/null
++++ b/node_modules/gsap/gsap-core.js
+@@ -0,0 +1,2 @@
++"use client";
++export * from "./index.js";
+\ No newline at end of file
