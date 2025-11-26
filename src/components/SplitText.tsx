@@ -5,7 +5,7 @@ import { SplitText as GSAPSplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
+  gsap.registerPlugin(ScrollTrigger, GSAPSplitText);
 }
 
 export interface SplitTextProps {
