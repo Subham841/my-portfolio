@@ -7,6 +7,7 @@ import { ArrowDown } from 'lucide-react';
 import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
+import SplitText from '../SplitText';
 
 const HeroSection = () => {
   const { firestore } = useFirebase();
@@ -48,12 +49,23 @@ const HeroSection = () => {
             </div>
           </div>
           <div className="text-center md:text-left order-2 md:order-1">
-            <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 tracking-tight">
-              Subham Kumar Sahu
-            </h1>
-            <p className="text-xl md:text-2xl font-headline text-primary mb-6">
-              Backend Developer & Web Development Enthusiast
-            </p>
+            <SplitText
+              text="Subham Kumar Sahu"
+              tag="h1"
+              className="text-4xl md:text-6xl font-display font-bold mb-4 tracking-tight"
+              textAlign="inherit"
+              delay={50}
+              splitType="chars"
+            />
+             <SplitText
+              text="Backend Developer & Web Development Enthusiast"
+              tag="p"
+              className="text-xl md:text-2xl font-headline text-primary mb-6"
+              textAlign="inherit"
+              delay={20}
+              duration={0.8}
+              splitType="words"
+            />
             
              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                <Link href="#projects">
